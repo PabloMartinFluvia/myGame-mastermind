@@ -1,0 +1,23 @@
+@startuml rules
+state "secret setted" as S1
+state "combination proposed" as S2
+state S3 <<choice>>
+state "combination failed" as S4
+state S5 <<choice>>
+
+[*] --> S1 : maker sets secret combination
+S1 --> S2: breaker proposes combination
+S2 --> S3: maker sets result
+note on link
+black: correct color in correct position
+white: correct color but incorrect position
+none: else
+end note
+S3 --> [*]: [result's all 4 colors black]
+S3 --> S4: [else]
+S4 --> S5
+S5 --> [*]: [result count = 10]
+S5 --> S1: [else]
+
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml mastermind_domain_model
+class Mastermind
+class Turn
+class Board
+class Player
+class MakerPlayer
+class BreakerPlayer
+class Combination
+class ProposedCombination
+class SecretCombination
+class Result
+class WinnerResult
+class Success
+class White
+class Black
+enum Color {
+	- RED
+	- GREEN
+	- BLUE
+	- YELLOW
+	- CYAN
+	- MAGENTA
+}
+
+Mastermind *--> "2"Player
+Mastermind *--> Board
+Mastermind *--> Turn
+Turn -down-> "2"Player
+Board *--> SecretCombination
+Board o--> "0..10"ProposedCombination
+Board o--> "0..10"Result
+Success <|-- Black
+Success <|-- White
+Result *--> "2..4"Success
+Result <|-- WinnerResult
+WinnerResult *--> "4"Black
+Combination <|-- ProposedCombination
+Combination <|-- SecretCombination
+Combination *--> "4"Color
+Player <|-- MakerPlayer
+Player <|-- BreakerPlayer
+MakerPlayer -down-> SecretCombination
+MakerPlayer .down.> Result
+BreakerPlayer -down-> "0..10"ProposedCombination
+@enduml

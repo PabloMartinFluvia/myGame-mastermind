@@ -1,0 +1,65 @@
+@startuml mastermind_final_state_winner
+object ":Mastermind" as Mastermind
+object ":Board" as Board {
+	attempts = 5
+}
+object ":SecretCombination" as SecretCombination
+object ":ProposedCombination" as ProposedCombination1
+object ":ProposedCombination" as ProposedCombination2
+object ":Color" as Color1
+object ":Color" as Color2
+object ":Color" as Color3
+object ":Color" as Color4
+object ":Color" as Color5
+object ":Color" as Color6
+object ":Result" as Result1
+object ":Result" as Result2
+object ":White" as White1
+object ":Black" as Black1
+object ":Black" as Black2
+object ":White" as White3
+object ":Black" as Black3
+object ":Black" as Black4
+
+Mastermind *--> Board
+note "attempts - 1" as proposedCombinations
+Board *--> ProposedCombination1
+Board *--> ProposedCombination2
+Board *--> SecretCombination
+Board *--> Result1
+Board *--> Result2
+proposedCombinations .. ProposedCombination1
+ProposedCombination1 *--> Color1
+ProposedCombination1 *--> Color2
+ProposedCombination1 --> Result1
+ProposedCombination2 *--> Color3
+ProposedCombination2 *--> Color4
+ProposedCombination2 --> Result2
+SecretCombination *--> Color5
+SecretCombination *--> Color6
+proposedCombinations .. Result1
+Result1 *--> White1
+Result1 *--> Black1
+Result2 *--> Black2
+Result1 *--> White3
+Result1 *--> Black3
+Result2 *--> Black4
+note "4" as winnerBlacks
+winnerBlacks .. Black4
+winnerBlacks .. Black2
+note "0..3" as loserBlacks
+loserBlacks .. Black1
+loserBlacks .. Black3
+note "0..4" as loserWhites
+loserWhites .. White1
+loserWhites .. White3
+note "4" as colors1
+colors1 .. Color1
+colors1 .. Color2
+note "4" as colors2
+colors2 .. Color3
+colors2 .. Color4
+note "4" as colors3
+colors3 .. Color5
+colors3 .. Color6
+@enduml
