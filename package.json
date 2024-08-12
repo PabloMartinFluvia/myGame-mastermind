@@ -1,0 +1,15 @@
+{
+  "name": "mygame-mastermind",
+  "version": "1.0.0",
+  "description": "Project developed during [master of programming and software design](https://escuela.it/masters/master-programacion-diseno-software).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "console-mpds": "^1.0.4"
+  }
+}
