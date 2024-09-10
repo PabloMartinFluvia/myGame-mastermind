@@ -3,35 +3,35 @@ Project developed during [master of programming and software design](https://esc
 
 
 ## Índex
-* [Branches](#Branches)  
-   * [branch-js](#branch-js)
-* [domainModel](#domainModel)  
-   * [vocabulary](#vocabulary) 
-   * [instructions](#instructions)
-   * [finalState](#finalState)  
+* [Develop Process](#develop-process)
+* [Domain Model](#domain-model)  
+   * [Vocabulary](#vocabulary) 
+   * [Instructions](#instructionss)
+   * [Final State](#final-state)  
    
 
-## Branches
-Game developed whit differents technologies. Each one in his own branch.
-### branch-js
-Checkout **main-js** branch for game developed with **javascript**.
+## Versions
 
-## domainModel  
+## Develop Process
+Checkout the specified branch for each task.
+- ![DevelopProcess](./docs/readme/diagrams/out/develop%20process.svg)
+
+## Domain Model
   
-![Mastermind](docs/images/mastermind.jpg)  
+![Mastermind](docs/readme/images/mastermind.jpg)  
 
 [WIKI](https://es.wikipedia.org/wiki/Mastermind)
 
 [Youtube](https://www.youtube.com/watch?v=2-hTeg2M6GQ)
 
-### vocabulary
+### Vocabulary
 
-![Vocabulario](./docs/diagrams/out/vocabulary.svg)  
+![Vocabulario](./docs/readme/diagrams/out/vocabulary.svg)  
 
-### instructions 
-![Instrucciones](./docs/diagrams/out/rules.svg)
+### Instructions 
+![Instrucciones](./docs/readme/diagrams/out/rules.svg)
   
-### finalState  
+### Final State  
   
-![Estado_final](./docs/diagrams/out/final_state.svg)
+![Estado_final](./docs/readme/diagrams/out/final_state.svg)
 
