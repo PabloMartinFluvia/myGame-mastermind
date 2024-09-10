@@ -3,6 +3,8 @@ Project developed during [master of programming and software design](https://esc
 
 
 ## Índex
+* [Main Versions](#main-versions)
+   * [Basic](#basic)
 * [Develop Process](#develop-process)
 * [Domain Model](#domain-model)  
    * [Vocabulary](#vocabulary) 
@@ -10,11 +12,16 @@ Project developed during [master of programming and software design](https://esc
    * [Final State](#final-state)  
    
 
-## Versions
+## Main Versions
+![Versiones](./docs/readme/diagrams/out/versions.svg)
+
+### Basic 
+[Basic Requisites](./docs/basic/requisites.md)
 
 ## Develop Process
 Checkout the specified branch for each task.
-- ![DevelopProcess](./docs/readme/diagrams/out/develop%20process.svg)
+
+![DevelopProcess](./docs/readme/diagrams/out/develop%20process.svg)
 
 ## Domain Model
   

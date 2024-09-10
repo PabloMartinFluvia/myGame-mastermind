@@ -3,13 +3,13 @@
 state languageChoice <<choice>>
 
 state WITH_JavaScript as " " : init JS developement  
-state T1 as "T1_DONE " : branch js_v0.0
-state T2 as "T2_DONE " : branch js_v0.1
+state T1 as " " : branch js_v0.0
+state T2 as " " : branch js_v0.1
 
 [*] --> languageChoice : chooseLanguage
 languageChoice -right-> WITH_JavaScript : [isJavascriptChoosed]
-WITH_JavaScript --> T1 : doTask1
-T1 --> T2 : doTask2
+WITH_JavaScript --> T1 : task 
+T1 --> T2 : task 
 T2 --> [*]
 
 note right of T1
