@@ -20,7 +20,7 @@ function playMastermind() {
         let proposeds = [];
         let results = [];              
         do {        
-            const proposed = askProposed(COLORS, COMBINATION_LENGTH);   
+            const proposed = askProposed(COLORS);   
             proposeds[proposeds.length] = proposed;   
             const RESULT_COLORS = ['black', 'white'];       
             const result = getResult(secret, proposed, RESULT_COLORS);                                        
