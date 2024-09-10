@@ -16,7 +16,7 @@ Project developed during [master of programming and software design](https://esc
 ![Versiones](./docs/readme/diagrams/out/versions.svg)
 
 ### Basic 
-[Basic Requisites](./docs/basic/requisites.md)
+[Basic Requisites](./docs/basic/README.md)
 
 ## Develop Process
 Checkout the specified branch for each task.

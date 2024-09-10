@@ -1,0 +1,12 @@
+@startuml start_usecase
+state INITIAL
+state IN_GAME
+state start as " "
+state ShowBoard as "Show board"
+
+[*] --> INITIAL
+INITIAL --> start: Player requests to start a new game
+start --> ShowBoard: System shows title message
+ShowBoard --> IN_GAME: System allows Propose combination
+IN_GAME --> [*]
+@enduml

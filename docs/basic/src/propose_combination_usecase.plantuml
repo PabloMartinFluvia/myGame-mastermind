@@ -1,0 +1,49 @@
+@startuml propose_combination_usecase
+state IN_GAME
+state requested as " "
+state allowed as " "
+state error as " "
+state ShowBoard as "Show board"
+state winner as " "
+state looser as " "
+state finished as " "
+state last as " "
+state is_correct <<choice>>
+state is_finished <<choice>>
+state is_winner <<choice>>
+state OUT_GAME
+state IN_GAME_AGAIN as "IN_GAME"
+
+[*] --> IN_GAME
+IN_GAME --> requested: Player requests propose a combination
+requested --> allowed: System requests a proposed combination
+allowed --> is_correct: Player introduces a proposed combination
+is_correct --> ShowBoard
+is_correct --> error: [incorrect proposed combination]
+note on link 
+  proposedCombination.colors.length != 4
+  proposedCombination.colors at least one repeated
+  proposedCombination.colors at least one != Color.values
+end note
+error --> last: System shows error
+ShowBoard --> is_finished
+is_finished --> is_winner: [finished]
+note on link
+  winner || loser
+end note
+is_winner --> winner: [winner]
+note on link
+  result.blacks = 4
+end note
+is_winner --> looser: [loser]
+note on link
+  result.blacks < 4 && attempts = 10
+end note
+is_finished --> last
+winner --> finished: System shows winner message
+looser --> finished: System shows loser message
+last --> IN_GAME_AGAIN: System allows to propose a combination
+IN_GAME_AGAIN --> [*]
+finished --> OUT_GAME: System allows to resume a new game
+OUT_GAME --> [*]
+@enduml

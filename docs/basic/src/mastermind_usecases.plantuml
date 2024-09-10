@@ -1,0 +1,13 @@
+@startuml mastermind_usecases
+left to right direction
+actor Player
+usecase Start
+Player --> Start
+usecase Board as "Show board"
+usecase Propose as "Propose combination"
+Player --> Propose
+usecase Resume
+Player --> Resume
+Start .down.> Board: include
+Propose .down.> Board: include
+@enduml

@@ -1,0 +1,8 @@
+@startuml show_board_usecase
+state attempts_shown as " "
+state secret_shown as " "
+
+[*] --> attempts_shown: System shows attempts
+attempts_shown --> secret_shown: System shows secret combination as "****"
+secret_shown --> [*]: System shows proposed combinations with results
+@enduml
