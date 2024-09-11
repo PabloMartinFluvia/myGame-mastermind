@@ -25,15 +25,15 @@ function playMastermind() {
 
         function initGame() {
             return {
-                TITLE: `MASTERMIND`, // showTitle
+                TITLE: `MASTERMIND`, 
                 rules: {
-                    COLORS: ['r', 'g', 'y', 'b', 'm', 'c'], // generateSecret // getErrorMsg
-                    COMBINATION_LENGTH: 4, // generateSecret // getErrorMsg
+                    COLORS: ['r', 'g', 'y', 'b', 'm', 'c'], 
+                    COMBINATION_LENGTH: 4, 
                     MAX_ATTEMPTS: 10 // hasMoreAttempts  
                 },
                 board: {                       
-                    secret: [], // generateSecret // showBoard // addAtempt                
-                    attempts: []   // showBoard // addAtempt // isWinner // hasMoreAttempts
+                    secret: [], 
+                    attempts: []   
                 },
             };
         }
