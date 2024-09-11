@@ -10,49 +10,51 @@ function playMastermind() {
     } while (isResume());
 
     function playGame() {
-        const game = initGame();
-        showTitle(game.TITLE);
-        generateSecretRandomly(game);
-        showBoard(game.board);
-        let secretFound;
+        const game = initGame();      
+        showTitle(game.TITLE);  
+        showBoard(game.board);        
         do {
             const proposed = askProposed(game.rules);
             addAttempt(game.board, proposed);
-            showBoard(game.board);
-            secretFound = isWinner(game.board);
-        } while (!secretFound && hasMoreAttempts(game));
-        consoleMPDS.writeln(`You've ${secretFound ? `won!!! ;-)` : `lost!!! :-(`}`);
+            showBoard(game.board);            
+        } while (!isWinner(game.board) && hasMoreAttempts(game));
+        consoleMPDS.writeln(`You've ${isWinner(game.board) ? `won!!! ;-)` : `lost!!! :-(`}`);
 
-        function initGame() {
-            return {
+        // secret & proposed como Strings
+        // black/white counts renombrar como blacks/whites
+
+        function initGame() {            
+            const game = {
                 TITLE: `MASTERMIND`, 
                 rules: {
                     COLORS: ['r', 'g', 'y', 'b', 'm', 'c'], 
                     COMBINATION_LENGTH: 4, 
-                    MAX_ATTEMPTS: 10 // hasMoreAttempts  
+                    MAX_ATTEMPTS: 10 
                 },
-                board: {                       
-                    secret: [], 
+                board: {        
                     attempts: []   
                 },
-            };
+            };        
+            generateSecretRandomly(game);
+            return game;
+
+            function generateSecretRandomly({rules, board}) {    
+                board.secret = '';        
+                for (let i = 0; i < rules.COMBINATION_LENGTH; i++) {
+                    let color;
+                    do {
+                        let indexColor = parseInt(Math.random() * rules.COLORS.length);
+                        color = rules.COLORS[indexColor];
+                    } while (isValuePresent(board.secret, color));
+                    board.secret += color;
+                }
+            }
         }
 
         function showTitle(title) {
             consoleMPDS.writeln(`----- ${title} -----`);
         }
-
-        function generateSecretRandomly({rules, board}) {            
-            for (let i = 0; i < rules.COMBINATION_LENGTH; i++) {
-                let color;
-                do {
-                    let indexColor = parseInt(Math.random() * rules.COLORS.length);
-                    color = rules.COLORS[indexColor];
-                } while (isValuePresent(board.secret, color));
-                board.secret[i] = color;
-            }
-        }
-
+            
         function showBoard({ attempts, secret }) {
             consoleMPDS.writeln(`\n${attempts.length} attempt(s):`)
             showSecret(secret);
@@ -61,16 +63,17 @@ function playMastermind() {
             }
 
             function showSecret(secret) {
+                const HIDDEN_CHAR = '*';
                 let msg = '';
                 for (let i = 0; i < secret.length; i++) {
-                    msg += '*';
+                    msg += HIDDEN_CHAR;
                 }
                 consoleMPDS.writeln(msg);
             }
 
             function showAttempt(attempt) {
                 let msg = attempt.proposed;
-                msg += ` --> ${attempt.blackCount} blacks and ${attempt.whiteCount} whites`;
+                msg += ` --> ${attempt.blacks} blacks and ${attempt.whites} whites`;
                 consoleMPDS.writeln(msg);
             }
         }
@@ -93,18 +96,18 @@ function playMastermind() {
                 if (hasInvalidLength(proposed, COMBINATION_LENGTH)) {
                     errorMsg = `Wrong proposed combination length`;
                 } else if (hasInvalidValues(proposed, COLORS)) {
-                    errorMsg = `Wrong colors, they must be ${parseArrayToString(COLORS)}`;
+                    errorMsg = `Wrong colors, they must be ${arrayToString(COLORS)}`;
                 } else if (hasDuplicatedValues(proposed)) {
                     errorMsg = `Wrong proposed combination, colors can't be duplicated`;
                 }
                 return errorMsg;
 
-                function hasInvalidLength(array, expectedLength) {
-                    return array.length !== expectedLength;
+                function hasInvalidLength(values, expectedLength) {
+                    return values.length !== expectedLength;
                 }
 
-                function hasInvalidValues(array, validValues) {
-                    for (let value of array) {
+                function hasInvalidValues(values, validValues) {
+                    for (let value of values) {
                         if (!isValuePresent(validValues, value)) {
                             return true;
                         }
@@ -112,7 +115,7 @@ function playMastermind() {
                     return false;
                 }
 
-                function parseArrayToString(array) {
+                function arrayToString(array) {
                     let msg = '';
                     for (let value of array) {
                         msg += value;
@@ -120,13 +123,13 @@ function playMastermind() {
                     return msg;
                 }
 
-                function hasDuplicatedValues(array) {
+                function hasDuplicatedValues(values) {
                     let copy = [];
-                    for (let i = 0; i < array.length; i++) {
-                        if (isValuePresent(copy, array[i])) {
+                    for (let i = 0; i < values.length; i++) {
+                        if (isValuePresent(copy, values[i])) {
                             return true;
                         }
-                        copy[i] = array[i];
+                        copy[i] = values[i];
                     }
                     return false;
                 }
@@ -145,14 +148,14 @@ function playMastermind() {
             }
             attempts[attempts.length] = {
                 proposed: proposed,
-                blackCount: blackCount,
-                whiteCount: whiteCount
+                blacks: blackCount,
+                whites: whiteCount
             };
         }
 
         function isWinner({ attempts }) {
             const lastAttempt = attempts[attempts.length - 1];
-            return lastAttempt.blackCount === lastAttempt.proposed.length;
+            return lastAttempt.blacks === lastAttempt.proposed.length;
         }
 
         function hasMoreAttempts({ board, rules }) {
@@ -160,9 +163,9 @@ function playMastermind() {
         }
     }
 
-    function isValuePresent(array, value) {
-        for (let i = 0; i < array.length; i++) {
-            if (value === array[i]) {
+    function isValuePresent(values, value) {
+        for (let i = 0; i < values.length; i++) {
+            if (value === values[i]) {
                 return true;
             }
         }
