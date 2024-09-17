@@ -13,25 +13,24 @@ function playMastermind() {
     } while (continueDialog.isAffirmative());
 }
 
-function initGame(validator = initCombinationValidator()) {    
-    const game = {
+function initGame(validator = initCombinationValidator()) {
+    return {
         validator: validator,
         board: initBoard(),
         player: initPlayer(validator),
 
         play: function () {
             showWelcome();
-            game.board.secret = generateSecretRandomly(game);
-            game.board.show();
+            this.board.secret = generateSecretRandomly(this);
+            this.board.show();
             do {
-                const proposed = game.player.proposeCombination();
-                game.board.addAttempt(proposed);
-                game.board.show();
-            } while (!isEndGame(game));
-            showEndGameMsg(game);
+                const proposed = this.player.proposeCombination();
+                this.board.addAttempt(proposed);
+                this.board.show();
+            } while (!isEndGame(this));
+            showEndGameMsg(this);
         }
     };
-    return game;
 
     function showWelcome() {
         consoleMPDS.writeln(`----- MASTERMIND -----`);
@@ -61,24 +60,24 @@ function initGame(validator = initCombinationValidator()) {
 }
 
 function initBoard() {
-    const board = {
+    return {
         secret: [],
         attempts: [],
         MAX_ATTEMPTS: 10,
 
         addAttempt: function (proposed) {
-            const attempt = initAttempt(proposed, initResult(proposed, board.secret));
-            initArrayAdapter(board.attempts).addAtEnd(attempt);
+            const attempt = initAttempt(proposed, initResult(proposed, this.secret));
+            initArrayAdapter(this.attempts).addAtEnd(attempt);
         },
 
         show: function () {
-            showAttemptsCount(board);
-            showSecret(board);
-            showAttempts(board);
+            showAttemptsCount(this);
+            showSecret(this);
+            showAttempts(this);
         },
 
         isLastAttemptWinner: function () {
-            const attemptsAdapted = initArrayAdapter(board.attempts);
+            const attemptsAdapted = initArrayAdapter(this.attempts);
             if (attemptsAdapted.hasLength()) {
                 return attemptsAdapted.getLast().isWinner();
             }
@@ -86,10 +85,9 @@ function initBoard() {
         },
 
         hasMaxAttempts: function () {
-            return initArrayAdapter(board.attempts).hasLength(board.MAX_ATTEMPTS);
+            return initArrayAdapter(this.attempts).hasLength(this.MAX_ATTEMPTS);
         }
     };
-    return board;
 
     function showAttemptsCount({ attempts }) {
         consoleMPDS.writeln(`\n${attempts.length} attempt(s):`)
@@ -112,38 +110,35 @@ function initBoard() {
 }
 
 function initAttempt(proposed, result) {
-    const attempt = {
+    return {
         proposed: proposed,
         result: result,
 
         show: function () {
-            let msg = initArrayAdapter(attempt.proposed).toString();
-            msg += ` --> ${attempt.result.countBlacks()} blacks and ${attempt.result.countWhites()} whites`;
+            let msg = initArrayAdapter(this.proposed).toString();
+            msg += ` --> ${this.result.countBlacks()} blacks and ${this.result.countWhites()} whites`;
             consoleMPDS.writeln(msg);
         },
 
         isWinner: function () {
-            return attempt.proposed.length === attempt.result.countBlacks();
+            return this.proposed.length === this.result.countBlacks();
         }
     };
-    return attempt;
 }
 
-function initResult(proposed, secret, VALID_VALUES = ["black", "white", "fail"]) {    
-    const result = {
+function initResult(proposed, secret, VALID_VALUES = ["black", "white", "fail"]) {
+    return {
         VALID_VALUES: VALID_VALUES,
         success: calculateSuccess(proposed, secret, VALID_VALUES),
 
         countBlacks: function () {
-            return initArrayAdapter(result.success).count(getBlack(result));
+            return initArrayAdapter(this.success).count(getBlack(this));
         },
 
         countWhites: function () {
-            return initArrayAdapter(result.success).count(getWhite(result));
+            return initArrayAdapter(this.success).count(getWhite(this));
         }
     }
-
-    return result;
 
     function calculateSuccess(proposed, secret, [black, white, fail]) {
         const values = [];
@@ -170,33 +165,32 @@ function initResult(proposed, secret, VALID_VALUES = ["black", "white", "fail"])
 }
 
 function initCombinationValidator() {
-    const validator = {
+    return {
         COMBINATION_LENGTH: 4,
         COLORS: ['r', 'g', 'y', 'b', 'm', 'c'],
         errorMsg: "",
         OK: "ok",
 
         validate: function (combination) {
-            validator.errorMsg = validator.OK;
-            if (hasInvalidLength(validator, combination)) {
-                validator.errorMsg = `Wrong proposed combination length`;
-            } else if (hasInvalidColors(validator, combination)) {
-                const colorsMsg = initArrayAdapter(validator.COLORS).toString();
-                validator.errorMsg = `Wrong colors, they must be ${colorsMsg}`;
+            this.errorMsg = this.OK;
+            if (hasInvalidLength(this, combination)) {
+                this.errorMsg = `Wrong proposed combination length`;
+            } else if (hasInvalidColors(this, combination)) {
+                const colorsMsg = initArrayAdapter(this.COLORS).toString();
+                this.errorMsg = `Wrong colors, they must be ${colorsMsg}`;
             } else if (hasDuplicatedValues(combination)) {
-                validator.errorMsg = `Wrong proposed combination, colors can't be duplicated`;
+                this.errorMsg = `Wrong proposed combination, colors can't be duplicated`;
             }
         },
 
         isValid: function () {
-            return validator.errorMsg === validator.OK;
+            return this.errorMsg === this.OK;
         },
 
         showError: function () {
-            consoleMPDS.writeln(validator.errorMsg);
+            consoleMPDS.writeln(this.errorMsg);
         }
     };
-    return validator;
 
     function hasInvalidLength({ COMBINATION_LENGTH }, combination) {
         return !initArrayAdapter(combination).hasLength(COMBINATION_LENGTH);
@@ -225,7 +219,7 @@ function initCombinationValidator() {
 }
 
 function initPlayer(validator) {
-    const player = {
+    return {
         validator: validator,
 
         proposeCombination: function () {
@@ -233,19 +227,18 @@ function initPlayer(validator) {
             do {
                 let answer = consoleMPDS.readString(`Propose a combination:`);
                 proposed = initStringAdapter(answer).toArray();
-                player.validator.validate(proposed);
-                if (!player.validator.isValid()) {
-                    player.validator.showError();
+                this.validator.validate(proposed);
+                if (!this.validator.isValid()) {
+                    this.validator.showError();
                 }
-            } while (!player.validator.isValid());
+            } while (!this.validator.isValid());
             return proposed;
         }
     };
-    return player;
 }
 
 function initYesNoDialog(question, VALID_ANSWERS = ["y", "n"]) {
-    const dialog = {
+    return {
         question: question,
         answer: ``,
         VALID_ANSWERS: VALID_ANSWERS,
@@ -253,20 +246,18 @@ function initYesNoDialog(question, VALID_ANSWERS = ["y", "n"]) {
         ask: function () {
             let error = false;
             do {
-                dialog.answer = consoleMPDS.readString(`${dialog.question} (${getAffirmative(dialog)}/${getNegative(dialog)}):`);
-                error = !isValid(dialog);
+                this.answer = consoleMPDS.readString(`${this.question} (${getAffirmative(this)}/${getNegative(this)}):`);
+                error = !isValid(this);
                 if (error) {
-                    consoleMPDS.writeln(`Please, answer "${getAffirmative(dialog)}" or "${getNegative(dialog)}"`);
+                    consoleMPDS.writeln(`Please, answer "${getAffirmative(this)}" or "${getNegative(this)}"`);
                 }
             } while (error);
         },
 
         isAffirmative: function () {
-            return dialog.answer === getAffirmative(dialog);
+            return this.answer === getAffirmative(this);
         }
     };
-
-    return dialog;
 
     function isValid(dialog) {
         return initArrayAdapter(dialog.VALID_ANSWERS).hasItem(dialog.answer);
@@ -282,40 +273,38 @@ function initYesNoDialog(question, VALID_ANSWERS = ["y", "n"]) {
 }
 
 function initStringAdapter(text) {
-    const stringAdapter = {
+    return {
         text: text,
 
         toArray: function () {
             const array = [];
-            for (let i = 0; i < stringAdapter.text.length; i++) {
-                array[i] = stringAdapter.text[i];
+            for (let i = 0; i < this.text.length; i++) {
+                array[i] = this.text[i];
             }
             return array;
         }
     };
-
-    return stringAdapter;
 }
 
 function initArrayAdapter(array = []) {
-    const adapted = {
+    return {
         array: array,
 
         addAtEnd: function (item) {
-            adapted.array[adapted.array.length] = item;
+            this.array[this.array.length] = item;
         },
 
         getLast: function () {
-            return adapted.array[adapted.array.length - 1];
+            return this.array[this.array.length - 1];
         },
 
         hasLength: function (expected) {
-            const length = adapted.array.length;
+            const length = this.array.length;
             return expected !== undefined ? length === expected : length > 0;
         },
 
         hasItem: function (target) {
-            for (let item of adapted.array) {
+            for (let item of this.array) {
                 if (item === target) {
                     return true;
                 }
@@ -325,7 +314,7 @@ function initArrayAdapter(array = []) {
 
         count: function (target) {
             let count = 0;
-            for (let item of adapted.array) {
+            for (let item of this.array) {
                 if (item === target) {
                     count++;
                 }
@@ -335,13 +324,11 @@ function initArrayAdapter(array = []) {
 
         toString: function () {
             let text = '';
-            for (let item of adapted.array) {
+            for (let item of this.array) {
                 text += item;
             }
             return text;
         }
     };
-
-    return adapted;
 }
 
