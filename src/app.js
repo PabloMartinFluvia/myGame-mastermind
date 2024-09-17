@@ -13,8 +13,7 @@ function playMastermind() {
     } while (continueDialog.isAffirmative());
 }
 
-function initGame() {
-    const validator = initCombinationValidator();
+function initGame(validator = initCombinationValidator()) {    
     const game = {
         validator: validator,
         board: initBoard(),
@@ -68,7 +67,7 @@ function initBoard() {
         MAX_ATTEMPTS: 10,
 
         addAttempt: function (proposed) {
-            const attempt = initAttempt(proposed, board.secret);
+            const attempt = initAttempt(proposed, initResult(proposed, board.secret));
             initArrayAdapter(board.attempts).addAtEnd(attempt);
         },
 
@@ -112,10 +111,10 @@ function initBoard() {
     }
 }
 
-function initAttempt(proposed, secret) {
+function initAttempt(proposed, result) {
     const attempt = {
         proposed: proposed,
-        result: initResult(proposed, secret),
+        result: result,
 
         show: function () {
             let msg = initArrayAdapter(attempt.proposed).toString();
@@ -130,8 +129,7 @@ function initAttempt(proposed, secret) {
     return attempt;
 }
 
-function initResult(proposed, secret) {
-    const VALID_VALUES = ["black", "white", "fail"];
+function initResult(proposed, secret, VALID_VALUES = ["black", "white", "fail"]) {    
     const result = {
         VALID_VALUES: VALID_VALUES,
         success: calculateSuccess(proposed, secret, VALID_VALUES),
