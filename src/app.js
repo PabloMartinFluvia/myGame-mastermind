@@ -6,13 +6,6 @@ playMastermind();
 
 function playMastermind() {
     const continueDialog = initYesNoDialog("Do you want to continue?");
-    /*console.log(typeof ["y", "n"])
-    for (let property in continueDialog){
-        console.log(property);
-        console.log(typeof continueDialog[property]);
-        consoleMPDS.writeln();
-    }
-        */
     do {
         const newGame = initGame();        
         newGame.play();
