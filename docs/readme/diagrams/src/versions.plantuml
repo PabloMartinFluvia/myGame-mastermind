@@ -1,46 +1,13 @@
 @startuml versions
 
 state "Basic" as Básica
-state "Graphics" as Gráficos
-state UndoRedo
-state "ClientServer" as ClienteServidor
-State "Files" as Ficheros
-State "DataBase" as BasesDatos
 
 [*] --> Básica
-Básica --> Gráficos:Maitenance adaptive
-Gráficos --> UndoRedo:Maitenance perfective
-UndoRedo --> ClienteServidor:Maitenance adaptativo
-ClienteServidor --> Ficheros:Maitenance adaptive
-Ficheros --> BasesDatos:Maitenance adaptive
-BasesDatos --> [*]
-
-
+Básica --> [*]
 
 note right of Básica #15D2F3
   Console interface and use cases:
   Start, Propose y Resume.
 end note
-
-note right of Gráficos #15D2F3
-  Adding graphic interface.
-end note
-
-note right of UndoRedo #15D2F3
-  Adding undo/redo functionality.
-end note
-
-note right of ClienteServidor #15D2F3
-  Adding client/server distributed.
-end note
-
-note right of Ficheros #15D2F3
-  Adding persistence with files.
-end note
-
-note right of BasesDatos #15D2F3
-  Adapting persistence with database.
-end note
-
 
 @enduml
