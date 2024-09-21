@@ -155,7 +155,6 @@ function initResult(proposed, secret) {
     function getWhite() {
         return VALID_VALUES[1];
     }
-
 }
 
 function initCombinationValidator(COMBINATION_LENGTH, COLORS) {
