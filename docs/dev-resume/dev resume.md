@@ -17,14 +17,14 @@ This project has been used for practice:
 ## Tasks - Branches
 Task's description contains what's <i>new</i> vs previous task.
 
-### Task 1: js_v0.0
+### Task 0: js_v0.0
 - Task:
     - Implement vasic version only with functions.
 - Basic version.
 - Process Oriented Programing.
 - Imperative programing.
 
-### Task 2: js_v0.1
+### Task 1: js_v0.1
 - Task:
     - Upgrade previous task using objects <b>without methods</b> (aka structs, registers, etc...).
 - Design Principles to practice:
