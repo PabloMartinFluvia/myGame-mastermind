@@ -42,4 +42,5 @@ Task's description contains what's <i>new</i> vs previous task.
         - this
         - clousures
         - that / factory pattern
-- Object Oriented Programing combined with some free functions.
+- Object Oriented Programing combined with free functions to init objects.
+- <b>Note: improves after reviews are done in js_v0.2.4</b>
