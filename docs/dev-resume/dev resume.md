@@ -41,5 +41,5 @@ Task's description contains what's <i>new</i> vs previous task.
         - simple
         - this
         - clousures
-        - that
+        - that / factory pattern
 - Object Oriented Programing combined with some free functions.
