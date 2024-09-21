@@ -21,7 +21,7 @@ function initGame(validator = initCombinationValidator()) {
 
         play: function () {
             showWelcome();
-            this.board.secret = generateSecretRandomly(this);
+            generateSecretRandomly(this);
             this.board.show();
             do {
                 const proposed = this.player.proposeCombination();
@@ -36,7 +36,7 @@ function initGame(validator = initCombinationValidator()) {
         consoleMPDS.writeln(`----- MASTERMIND -----`);
     }
 
-    function generateSecretRandomly({ validator }) {
+    function generateSecretRandomly({ validator, board }) {
         let secret = [];
 
         for (let i = 0; i < validator.COMBINATION_LENGTH; i++) {
@@ -47,7 +47,7 @@ function initGame(validator = initCombinationValidator()) {
             } while (initArrayAdapter(secret).hasItem(color));
             secret[i] = color;
         }
-        return secret;
+        board.secret = secret;
     }
 
     function isEndGame({ board }) {
