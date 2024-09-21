@@ -7,28 +7,29 @@ playMastermind();
 function playMastermind() {
     const continueDialog = initYesNoDialog("Do you want to continue?");
     do {
-        const newGame = initGame();        
+        const newGame = initGame();
         newGame.play();
         continueDialog.ask();
     } while (continueDialog.isAffirmative());
 }
 
-function initGame(validator = initCombinationValidator()) {
+function initGame() {
+    const COMBINATION_LENGTH = 4;
+    const COLORS = ['r', 'g', 'y', 'b', 'm', 'c'];
+    const MAX_ATTEMPTS = 10;
+    const validator = initCombinationValidator(COMBINATION_LENGTH, COLORS);
+    const board = initBoard(generateSecretRandomly(), MAX_ATTEMPTS);
+    const player = initPlayer(validator);
     return {
-        validator: validator,
-        board: initBoard(),
-        player: initPlayer(validator),
-
         play: function () {
             showWelcome();
-            this.board.secret = generateSecretRandomly(this);
-            this.board.show();
+            board.show();
             do {
-                const proposed = this.player.proposeCombination();
-                this.board.addAttempt(proposed);
-                this.board.show();
-            } while (!isEndGame(this));
-            showEndGameMsg(this);
+                const proposed = player.proposeCombination();
+                board.addAttempt(proposed);
+                board.show();
+            } while (!isEndGame());
+            showEndGameMsg();
         }
     };
 
@@ -36,48 +37,45 @@ function initGame(validator = initCombinationValidator()) {
         consoleMPDS.writeln(`----- MASTERMIND -----`);
     }
 
-    function generateSecretRandomly({ validator }) {
+    function generateSecretRandomly() {
         let secret = [];
 
-        for (let i = 0; i < validator.COMBINATION_LENGTH; i++) {
+        for (let i = 0; i < COMBINATION_LENGTH; i++) {
             let color;
             do {
-                let indexColor = parseInt(Math.random() * validator.COLORS.length);
-                color = validator.COLORS[indexColor];
+                let indexColor = parseInt(Math.random() * COLORS.length);
+                color = COLORS[indexColor];
             } while (initArrayAdapter(secret).hasItem(color));
             secret[i] = color;
         }
         return secret;
     }
 
-    function isEndGame({ board }) {
+    function isEndGame() {
         return board.isLastAttemptWinner() || board.hasMaxAttempts();
     }
 
-    function showEndGameMsg({ board }) {
+    function showEndGameMsg() {
         consoleMPDS.writeln(`You've ${board.isLastAttemptWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
     }
 }
 
-function initBoard() {
+function initBoard(secret, MAX_ATTEMPTS) {
+    const attempts = [];    
     return {
-        secret: [],
-        attempts: [],
-        MAX_ATTEMPTS: 10,
-
         addAttempt: function (proposed) {
-            const attempt = initAttempt(proposed, initResult(proposed, this.secret));
-            initArrayAdapter(this.attempts).addAtEnd(attempt);
+            const attempt = initAttempt(proposed, initResult(proposed, secret));
+            initArrayAdapter(attempts).addAtEnd(attempt);
         },
 
         show: function () {
-            showAttemptsCount(this);
-            showSecret(this);
-            showAttempts(this);
+            showAttemptsCount();
+            showSecret();
+            showAttempts();
         },
 
         isLastAttemptWinner: function () {
-            const attemptsAdapted = initArrayAdapter(this.attempts);
+            const attemptsAdapted = initArrayAdapter(attempts);
             if (attemptsAdapted.hasLength()) {
                 return attemptsAdapted.getLast().isWinner();
             }
@@ -85,15 +83,15 @@ function initBoard() {
         },
 
         hasMaxAttempts: function () {
-            return initArrayAdapter(this.attempts).hasLength(this.MAX_ATTEMPTS);
+            return initArrayAdapter(attempts).hasLength(MAX_ATTEMPTS);
         }
     };
 
-    function showAttemptsCount({ attempts }) {
+    function showAttemptsCount() {
         consoleMPDS.writeln(`\n${attempts.length} attempt(s):`)
     }
 
-    function showSecret({ secret }) {
+    function showSecret() {
         const HIDDEN_CHAR = '*';
         let msg = '';
         for (let i = 0; i < secret.length; i++) {
@@ -102,7 +100,7 @@ function initBoard() {
         consoleMPDS.writeln(msg);
     }
 
-    function showAttempts({ attempts }) {
+    function showAttempts() {
         for (let i = 0; i < attempts.length; i++) {
             attempts[i].show();
         }
@@ -111,92 +109,85 @@ function initBoard() {
 
 function initAttempt(proposed, result) {
     return {
-        proposed: proposed,
-        result: result,
-
         show: function () {
-            let msg = initArrayAdapter(this.proposed).toString();
-            msg += ` --> ${this.result.countBlacks()} blacks and ${this.result.countWhites()} whites`;
+            let msg = initArrayAdapter(proposed).toString();
+            msg += ` --> ${result.countBlacks()} blacks and ${result.countWhites()} whites`;
             consoleMPDS.writeln(msg);
         },
 
         isWinner: function () {
-            return this.proposed.length === this.result.countBlacks();
+            return proposed.length === result.countBlacks();
         }
     };
 }
 
-function initResult(proposed, secret, VALID_VALUES = ["black", "white", "fail"]) {
+function initResult(proposed, secret) {
+    const VALID_VALUES = ["black", "white", "fail"];
+    const success = calculateSuccess(proposed, secret, VALID_VALUES);
     return {
-        VALID_VALUES: VALID_VALUES,
-        success: calculateSuccess(proposed, secret, VALID_VALUES),
-
         countBlacks: function () {
-            return initArrayAdapter(this.success).count(getBlack(this));
+            return initArrayAdapter(success).count(getBlack());
         },
 
         countWhites: function () {
-            return initArrayAdapter(this.success).count(getWhite(this));
+            return initArrayAdapter(success).count(getWhite());
         }
     }
 
     function calculateSuccess(proposed, secret, [black, white, fail]) {
-        const values = [];
+        const success = [];
         for (let i = 0; i < proposed.length; i++) {
             if (proposed[i] === secret[i]) {
-                values[i] = black;
+                success[i] = black;
             } else if (initArrayAdapter(secret).hasItem(proposed[i])) {
-                values[i] = white;
+                success[i] = white;
             } else {
-                values[i] = fail;
+                success[i] = fail;
             }
         }
-        return values;
+        return success;
     }
 
-    function getBlack(result) {
-        return result.VALID_VALUES[0];
+    function getBlack() {
+        return VALID_VALUES[0];
     }
 
-    function getWhite(result) {
-        return result.VALID_VALUES[1];
+    function getWhite() {
+        return VALID_VALUES[1];
     }
 
 }
 
-function initCombinationValidator() {
+function initCombinationValidator(COMBINATION_LENGTH, COLORS) {
+    const OK = "ok";
+    let errorMsg = "";
     return {
-        COMBINATION_LENGTH: 4,
-        COLORS: ['r', 'g', 'y', 'b', 'm', 'c'],
-        errorMsg: "",
-        OK: "ok",
-
         validate: function (combination) {
-            this.errorMsg = this.OK;
-            if (hasInvalidLength(this, combination)) {
-                this.errorMsg = `Wrong proposed combination length`;
-            } else if (hasInvalidColors(this, combination)) {
-                const colorsMsg = initArrayAdapter(this.COLORS).toString();
-                this.errorMsg = `Wrong colors, they must be ${colorsMsg}`;
+            errorMsg = OK;
+            if (hasInvalidLength(combination)) {
+                errorMsg = `Wrong proposed combination length`;
+            } else if (hasInvalidColors(combination)) {
+                const colorsMsg = initArrayAdapter(COLORS).toString();
+                errorMsg = `Wrong colors, they must be ${colorsMsg}`;
             } else if (hasDuplicatedValues(combination)) {
-                this.errorMsg = `Wrong proposed combination, colors can't be duplicated`;
+                errorMsg = `Wrong proposed combination, colors can't be duplicated`;
             }
         },
 
         isValid: function () {
-            return this.errorMsg === this.OK;
+            return errorMsg === OK;
         },
 
         showError: function () {
-            consoleMPDS.writeln(this.errorMsg);
+            consoleMPDS.writeln(errorMsg);
         }
     };
 
-    function hasInvalidLength({ COMBINATION_LENGTH }, combination) {
+    function hasInvalidLength(combination) {
         return !initArrayAdapter(combination).hasLength(COMBINATION_LENGTH);
     }
 
-    function hasInvalidColors({ COLORS }, combination) {
+    function hasInvalidColors(combination) {
         const colorsAdapted = initArrayAdapter(COLORS);
         for (let color of combination) {
             if (!colorsAdapted.hasItem(color)) {
@@ -207,7 +198,7 @@ function initCombinationValidator() {
     }
 
     function hasDuplicatedValues(combination) {
-        let copy = initArrayAdapter();
+        let copy = initArrayAdapter([]);
         for (let i = 0; i < combination.length; i++) {
             if (copy.hasItem(combination[i])) {
                 return true;
@@ -220,91 +211,83 @@ function initCombinationValidator() {
 
 function initPlayer(validator) {
     return {
-        validator: validator,
-
         proposeCombination: function () {
             let proposed;
             do {
                 let answer = consoleMPDS.readString(`Propose a combination:`);
                 proposed = initStringAdapter(answer).toArray();
-                this.validator.validate(proposed);
-                if (!this.validator.isValid()) {
-                    this.validator.showError();
+                validator.validate(proposed);
+                if (!validator.isValid()) {
+                    validator.showError();
                 }
-            } while (!this.validator.isValid());
+            } while (!validator.isValid());
             return proposed;
         }
     };
 }
 
-function initYesNoDialog(question, VALID_ANSWERS = ["y", "n"]) {
+function initYesNoDialog(question) {
+    const VALID_ANSWERS = ["y", "n"];
+    let answer;
     return {
-        question: question,
-        answer: ``,
-        VALID_ANSWERS: VALID_ANSWERS,
-
         ask: function () {
             let error = false;
             do {
-                this.answer = consoleMPDS.readString(`${this.question} (${getAffirmative(this)}/${getNegative(this)}):`);
-                error = !isValid(this);
+                answer = consoleMPDS.readString(`${question} (${getAffirmative()}/${getNegative()}):`);
+                error = !isValid();
                 if (error) {
-                    consoleMPDS.writeln(`Please, answer "${getAffirmative(this)}" or "${getNegative(this)}"`);
+                    consoleMPDS.writeln(`Please, answer "${getAffirmative()}" or "${getNegative()}"`);
                 }
             } while (error);
         },
 
         isAffirmative: function () {
-            return this.answer === getAffirmative(this);
+            return answer === getAffirmative();
         }
     };
 
-    function isValid(dialog) {
-        return initArrayAdapter(dialog.VALID_ANSWERS).hasItem(dialog.answer);
+    function isValid() {
+        return initArrayAdapter(VALID_ANSWERS).hasItem(answer);
     }
 
-    function getAffirmative(dialog) {
-        return dialog.VALID_ANSWERS[0];
+    function getAffirmative() {
+        return VALID_ANSWERS[0];
     }
 
-    function getNegative(dialog) {
-        return dialog.VALID_ANSWERS[1];
+    function getNegative() {
+        return VALID_ANSWERS[1];
     }
 }
 
 function initStringAdapter(text) {
     return {
-        text: text,
-
         toArray: function () {
             const array = [];
-            for (let i = 0; i < this.text.length; i++) {
-                array[i] = this.text[i];
+            for (let i = 0; i < text.length; i++) {
+                array[i] = text[i];
             }
             return array;
         }
     };
 }
 
-function initArrayAdapter(array = []) {
+function initArrayAdapter(array) {
     return {
-        array: array,
-
         addAtEnd: function (item) {
-            this.array[this.array.length] = item;
+            array[array.length] = item;
         },
 
         getLast: function () {
-            return this.array[this.array.length - 1];
+            return array[array.length - 1];
         },
 
         hasLength: function (expected) {
-            const length = this.array.length;
+            const length = array.length;
             return expected !== undefined ? length === expected : length > 0;
         },
 
         hasItem: function (target) {
-            for (let item of this.array) {
+            for (let item of array) {
                 if (item === target) {
                     return true;
                 }
@@ -314,7 +297,7 @@ function initArrayAdapter(array = []) {
 
         count: function (target) {
             let count = 0;
-            for (let item of this.array) {
+            for (let item of array) {
                 if (item === target) {
                     count++;
                 }
@@ -324,7 +307,7 @@ function initArrayAdapter(array = []) {
 
         toString: function () {
             let text = '';
-            for (let item of this.array) {
+            for (let item of array) {
                 text += item;
             }
             return text;
