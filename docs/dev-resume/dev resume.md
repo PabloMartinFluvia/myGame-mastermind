@@ -34,8 +34,12 @@ Task's description contains what's <i>new</i> vs previous task.
     - Consistent code: standards, coherence, alerts.
     - Minimum code: dead code, YAGNI, DRY.
 
-### Task 2: js_v0.2.0, js_v0.2.1, js_v0.2.2, js_v0.2.3
+### Task 2: js_v0.2.1, js_v0.2.2, js_v0.2.3, js_v0.2.4
 - Task:
     - Upgrade previous task usig objects with methods.
     - 4 differents versions to practice some alternatives to init objects with functions
+        - simple
+        - this
+        - clousures
+        - that
 - Object Oriented Programing combined with some free functions.
