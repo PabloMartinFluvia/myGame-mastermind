@@ -3,8 +3,9 @@
 ## Index
 * [Intro](#intro)
 * [Tasks - Branches](#tasks---branches)
-    * [Task 1](#task-1-js_v00)
-    * [Task 2](#task-2-js_v01)
+    * [Task 0](#task-0-js_v00)
+    * [Task 1](#task-1-js_v01)
+    * [Task 2](#task-2-js_v020-js_v021-js_v022-js_v023)
 
 ## Intro
 This project has been used for practice:
@@ -32,3 +33,9 @@ Task's description contains what's <i>new</i> vs previous task.
     - Self explanatory: naming, comments, format.
     - Consistent code: standards, coherence, alerts.
     - Minimum code: dead code, YAGNI, DRY.
+
+### Task 2: js_v0.2.0, js_v0.2.1, js_v0.2.2, js_v0.2.3
+- Task:
+    - Upgrade previous task usig objects with methods.
+    - 4 differents versions to practice some alternatives to init objects with functions
+- Object Oriented Programing combined with some free functions.
