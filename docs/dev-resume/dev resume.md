@@ -4,6 +4,7 @@
 * [Intro](#intro)
 * [Tasks - Branches](#tasks---branches)
     * [Task 1](#task-1-js_v00)
+    * [Task 2](#task-2-js_v01)
 
 ## Intro
 This project has been used for practice:
@@ -22,3 +23,12 @@ Task's description contains what's <i>new</i> vs previous task.
 - Basic version.
 - Process Oriented Programing.
 - Imperative programing.
+
+### Task 2: js_v0.1
+- Task:
+    - Upgrade previous task using objects <b>without methods</b> (aka structs, registers, etc...).
+- Design Principles to practice:
+    - KISS.
+    - Self explanatory: naming, comments, format.
+    - Consistent code: standards, coherence, alerts.
+    - Minimum code: dead code, YAGNI, DRY.
