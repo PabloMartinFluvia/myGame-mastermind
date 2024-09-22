@@ -44,3 +44,9 @@ Task's description contains what's <i>new</i> vs previous task.
         - that / factory pattern
 - Object Based Programing combined with free functions to init objects.
 - <b>Note: improvements after reviews are done in js_v0.2.4</b>
+
+### Task3: js_v0.3
+- New Design Principles to practice:
+    - Avoid antipattern Functional Descomposition
+    - Classify using different strategies and be inspired by the domain model  
+    - Information Expert Pattern / General Principle of Assignment of Responsibilities  
