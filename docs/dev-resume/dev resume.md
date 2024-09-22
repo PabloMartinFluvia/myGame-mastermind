@@ -50,3 +50,7 @@ Task's description contains what's <i>new</i> vs previous task.
     - Avoid antipattern Functional Descomposition
     - Classify using different strategies and be inspired by the domain model  
     - Information Expert Pattern / General Principle of Assignment of Responsibilities  
+
+- Analysis:
+
+![Analysys](./analysis.svg)

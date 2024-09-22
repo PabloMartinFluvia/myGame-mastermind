@@ -1,0 +1,98 @@
+@startuml analysis
+
+class Mastermind{    
+    - MAX_ATTEMPTS
+
+    + start()
+    - showTitle()    
+}
+Mastermind *--> Game
+Mastermind *--> CombinationValidator
+Mastermind *--> YesNoDialog
+
+class Game{
+    - MAX_ATTEMPTS
+
+    + Game(MAX_ATTEMPTS, validator)
+    + play()        
+    - isEnd()    
+    - isLastAttemptWinner()
+    - show()
+    - showEndMsg()
+}
+Game --> CombinationValidator
+Game *--> SecretCombination
+Game *--> "0..10" Attempt
+Game .down.> ProposedCombination
+
+
+class Attempt {
+    + Attempt(proposed, secret)
+    + isWinner()
+    + show()    
+}
+Attempt --> ProposedCombination
+Attempt .down.> SecretCombination
+Attempt --> Result
+
+class ProposedCombination{
+    - String colors    
+
+    + ask(validator)   
+    + getColor(index)
+    + getLength()    
+    + show() 
+    - getErrorMsg(validator)
+}
+ProposedCombination .down.> CombinationValidator
+
+class SecretCombination{
+    - String colors
+    
+    + setRandom(validator)
+    + getResult(proposed)
+    + show()
+    - addDifferentRandomColor(VALID_COLORS)
+    - hasColor(searched)
+}
+
+SecretCombination .down.> ProposedCombination
+SecretCombination .down.> CombinationValidator
+SecretCombination .down.> Result
+
+class Result{
+    -blacks
+    -whites
+
+    + initResult(blacks, whites)
+    + isWinner(expectedBlacks)
+    + show()    
+}
+
+class CombinationValidator {            
+    - COMBINATION_LENGTH
+    - VALID_COLORS
+    - DUPLICATED_COLORS_ALLOWED
+    - colors
+    
+    + setColors(colors)
+    + isLengthValid()
+    + hasValidColors()
+    + isDuplicatedColorsRuleValid()
+    + getVALID_COLORS()
+    - hasDuplicatedColors()
+    
+}
+
+class YesNoDialog {
+    - question
+    - answer
+    - VALID_ANSWERS
+
+    +YesNoDialog(question)
+    + ask()
+    + isAffirmative()
+    - getAffirmative()
+    - getNegative()
+}
+@enduml
