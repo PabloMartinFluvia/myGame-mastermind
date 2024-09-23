@@ -4,20 +4,6 @@ const consoleMPDS = new Console();
 
 initMastermind().play();
 
-/*
-    1   2   3   4
-       g   g   g
-        y   y   y
-            c   c
-    m           
-    
-    m   gy   gyc  gyc
-
-    m   g      c    y
-     
-    
-*/
-
 function initMastermind() {
     const that = {        
         game: null,
@@ -90,6 +76,7 @@ function initGame() {
 function initSecretCombination() {
     const that = {
         colors: "",
+        
         hasColor: function (searched) {
             for (let color of this.colors) {
                 if (color === searched) {
@@ -106,7 +93,7 @@ function initSecretCombination() {
                 let newColor;
                 do {
                     newColor = VALID_COLORS[parseInt(Math.random() * VALID_COLORS.length)];                    
-                } while (hasColor(newColor));
+                } while (that.hasColor(newColor));
                 that.colors += newColor;
             }
         },
@@ -166,7 +153,7 @@ function initProposedCombination() {
             for (let i = 0; i < this.colors.length - 1; i++) {
                 for (let j = i + 1; j < this.colors.length; j++) {
                     if (this.colors[i] === this.colors[j]) {
-                        return flase;
+                        return false;
                     }
                 }
             }
@@ -194,7 +181,7 @@ function initProposedCombination() {
             let error;
             do {
                 that.colors = consoleMPDS.readString(`Propose a combination:`);
-                error = !isValid(VALID_COLORS, COMBINATION_LENGTH);
+                error = !that.isValid(VALID_COLORS, COMBINATION_LENGTH);
                 if (error) {
                     consoleMPDS.writeln(that.getErrorMsg(VALID_COLORS, COMBINATION_LENGTH));
                 }
