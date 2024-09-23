@@ -31,7 +31,7 @@ function initGame() {
         VALID_COLORS: ['r', 'g', 'y', 'b', 'm', 'c'],
         COMBINATION_LENGTH: 4,
         MAX_ATTEMPTS: 10,
-        secret: initSecretCombination(),
+        secret: null,
         proposeds: [],
 
         isEndGame: function () {
@@ -60,7 +60,7 @@ function initGame() {
 
     return {
         play: function () {
-            that.secret.setRandom(that.VALID_COLORS, that.COMBINATION_LENGTH);
+            that.secret = initSecretCombination(that.VALID_COLORS, that.COMBINATION_LENGTH);            
             that.show();
             do {
                 const proposed = initProposedCombination();
@@ -73,11 +73,12 @@ function initGame() {
     };
 }
 
-function initSecretCombination() {
-    const that = {
+function initSecretCombination(VALID_COLORS, COMBINATION_LENGTH) {
+
+    const that = {       
         colors: "",
-        
-        hasColor: function (searched) {
+
+        hasColor: function (searched) {            
             for (let color of this.colors) {
                 if (color === searched) {
                     return true;
@@ -87,17 +88,15 @@ function initSecretCombination() {
         }
     };
 
-    return {
-        setRandom: function (VALID_COLORS, COMBINATION_LENGTH) {
-            for (let i = 0; i < COMBINATION_LENGTH; i++){
-                let newColor;
-                do {
-                    newColor = VALID_COLORS[parseInt(Math.random() * VALID_COLORS.length)];                    
-                } while (that.hasColor(newColor));
-                that.colors += newColor;
-            }
-        },
+    for (let i = 0; i < COMBINATION_LENGTH; i++){
+        let newColor;
+        do {
+            newColor = VALID_COLORS[parseInt(Math.random() * VALID_COLORS.length)];                    
+        } while (that.hasColor(newColor));
+        that.colors += newColor;
+    }
 
+    return {        
         getResult: function (proposed) {
             let blacks = 0;
             let whites = 0;

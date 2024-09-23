@@ -13,7 +13,6 @@ class Game{
     - COMBINATION_LENGTH    
     - MAX_ATTEMPTS
 
-    + Game()
     + play()        
     - isEndGame()    
     - isLastProposedWinner()
@@ -27,7 +26,7 @@ Game ..> Result
 class SecretCombination{
     - String colors
     
-    + setRandom(VALID_COLORS, COMBINATION_LENGTH)
+    + SecretCombination(VALID_COLORS, COMBINATION_LENGTH)    
     + getResult(proposed)
     + show()
     - hasColor(searched)
