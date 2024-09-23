@@ -4,10 +4,26 @@ const consoleMPDS = new Console();
 
 initMastermind().play();
 
+/*
+    1   2   3   4
+       g   g   g
+        y   y   y
+            c   c
+    m           
+    
+    m   gy   gyc  gyc
+
+    m   g      c    y
+     
+    
+*/
+
 function initMastermind() {
     const that = {
+        VALID_COLORS: ['r', 'g', 'y', 'b', 'm', 'c'],
+        COMBINATION_LENGTH: 4,
+        DUPLICATED_COLORS_ALLOWED: false,
         MAX_ATTEMPTS: 10,
-        validator: initCombinationValidator(),
         game: null,
         continueDialog: initYesNoDialog("Do you want to continue?"),
 
@@ -19,8 +35,8 @@ function initMastermind() {
     return {
         play: function () {
             that.showTitle();
-            do {                
-                game = initGame(that.MAX_ATTEMPTS, that.validator);
+            do {
+                game = initGame(that.VALID_COLORS, that.COMBINATION_LENGTH, that.DUPLICATED_COLORS_ALLOWED, that.MAX_ATTEMPTS);
                 game.play();
                 that.continueDialog.ask();
             } while (that.continueDialog.isAffirmative());
@@ -28,11 +44,11 @@ function initMastermind() {
     }
 }
 
-function initCombinationValidator() {
+function initCombinationValidator(VALID_COLORS, COMBINATION_LENGTH, DUPLICATED_COLORS_ALLOWED) {
     const that = {
-        COMBINATION_LENGTH: 4,
-        VALID_COLORS: ['r', 'g', 'y', 'b', 'm', 'c'],
-        DUPLICATED_COLORS_ALLOWED: false,
+        VALID_COLORS: VALID_COLORS,
+        COMBINATION_LENGTH: COMBINATION_LENGTH,
+        DUPLICATED_COLORS_ALLOWED: DUPLICATED_COLORS_ALLOWED,
         colors: "",
 
         hasDuplicatedColors: function () {
@@ -87,7 +103,7 @@ function initYesNoDialog(question) {
     const that = {
         question: question,
         answer: undefined,
-        VALID_ANSWERS: ["y", "n"],        
+        VALID_ANSWERS: ["y", "n"],
 
         getAffirmative: function () {
             return this.VALID_ANSWERS[0];
@@ -116,44 +132,48 @@ function initYesNoDialog(question) {
     };
 }
 
-function initGame(MAX_ATTEMPTS, validator) {
+function initGame(VALID_COLORS, COMBINATION_LENGTH, DUPLICATED_COLORS_ALLOWED, MAX_ATTEMPTS) {
     const that = {
         MAX_ATTEMPTS: MAX_ATTEMPTS,
-        validator: validator,
+        COMBINATION_LENGTH: COMBINATION_LENGTH,
+        validator: initCombinationValidator(VALID_COLORS, COMBINATION_LENGTH, DUPLICATED_COLORS_ALLOWED),
         secret: initSecretCombination(),
-        attempts: [],
+        proposeds: [],
 
-        isEnd: function () {
-            return this.isLastAttemptWinner() || this.attempts.length === this.MAX_ATTEMPTS;
+        isEndGame: function () {
+            return this.isLastProposedWinner() || this.proposeds.length === this.MAX_ATTEMPTS;
         },
 
-        isLastAttemptWinner: function () {
-            return this.attempts[this.attempts.length - 1].isWinner();
+        isLastProposedWinner: function () {
+            const lastProposed = this.proposeds[this.proposeds.length - 1];            
+            return this.secret.getResult(lastProposed).isWinner(this.COMBINATION_LENGTH);                                    
         },
 
         show: function () {
-            consoleMPDS.writeln(`\n${this.attempts.length} attempt(s):`);
+            consoleMPDS.writeln(`\n${this.proposeds.length} attempt(s):`);
             this.secret.show();
-            for (let attempt of this.attempts) {
-                attempt.show();
+            for (let proposed of this.proposeds) {
+                proposed.show();
+                consoleMPDS.write(' --> ');
+                this.secret.getResult(proposed).show();                
             }
         },
 
         showEndMsg: function () {
-            consoleMPDS.writeln(`You've ${this.isLastAttemptWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
+            consoleMPDS.writeln(`You've ${this.isLastProposedWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
         }
     };
 
     return {
         play: function () {
-            that.secret.setRandom(that.validator);            
+            that.secret.setRandom(that.validator);
             that.show();
             do {
                 const proposed = initProposedCombination();
                 proposed.ask(that.validator);
-                that.attempts[that.attempts.length] = initAttempt(proposed, that.secret);
+                that.proposeds[that.proposeds.length] = proposed;
                 that.show();
-            } while (!that.isEnd());
+            } while (!that.isEndGame());
             that.showEndMsg();
         }
     };
@@ -165,7 +185,7 @@ function initSecretCombination() {
 
         addDifferentRandomColor: function (VALID_COLORS) {
             let color;
-            do {                
+            do {
                 color = VALID_COLORS[parseInt(Math.random() * VALID_COLORS.length)];
             } while (that.hasColor(color));
             that.colors += color;
@@ -184,9 +204,9 @@ function initSecretCombination() {
     return {
         setRandom: function (validator) {
             do {
-                that.addDifferentRandomColor(validator.getVALID_COLORS());                
+                that.addDifferentRandomColor(validator.getVALID_COLORS());
                 validator.setColors(that.colors);
-            } while (!validator.isLengthValid());
+            } while (!validator.isLengthValid());            
         },
 
         getResult: function (proposed) {
@@ -256,25 +276,6 @@ function initProposedCombination() {
 
         show: function () {
             consoleMPDS.write(that.colors);
-        }
-    };
-}
-
-function initAttempt(proposed, secret) {
-    const that = {
-        proposed: proposed,
-        result: secret.getResult(proposed)
-    };
-
-    return {
-        isWinner: function () {
-            return that.result.isWinner(proposed.getLength());
-        },
-
-        show: function () {
-            that.proposed.show();
-            consoleMPDS.write(' --> ');
-            that.result.show();
         }
     };
 }
