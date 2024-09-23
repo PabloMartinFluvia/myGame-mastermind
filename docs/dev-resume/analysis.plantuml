@@ -1,64 +1,53 @@
 @startuml analysis
 
-class Mastermind{    
-    - MAX_ATTEMPTS
+class Mastermind{  
 
     + start()
     - showTitle()    
 }
 Mastermind *--> Game
-Mastermind *--> CombinationValidator
 Mastermind *--> YesNoDialog
 
 class Game{
+    - VALID_COLORS
+    - COMBINATION_LENGTH    
     - MAX_ATTEMPTS
 
-    + Game(MAX_ATTEMPTS, validator)
+    + Game()
     + play()        
-    - isEnd()    
-    - isLastAttemptWinner()
+    - isEndGame()    
+    - isLastProposedWinner()
     - show()
     - showEndMsg()
 }
-Game --> CombinationValidator
 Game *--> SecretCombination
-Game *--> "0..10" Attempt
-Game .down.> ProposedCombination
-
-
-class Attempt {
-    + Attempt(proposed, secret)
-    + isWinner()
-    + show()    
-}
-Attempt --> ProposedCombination
-Attempt .down.> SecretCombination
-Attempt --> Result
-
-class ProposedCombination{
-    - String colors    
-
-    + ask(validator)   
-    + getColor(index)
-    + getLength()    
-    + show() 
-    - getErrorMsg(validator)
-}
-ProposedCombination .down.> CombinationValidator
+Game *--> "0..10" ProposedCombination
+Game ..> Result
 
 class SecretCombination{
     - String colors
     
-    + setRandom(validator)
+    + setRandom(VALID_COLORS, COMBINATION_LENGTH)
     + getResult(proposed)
     + show()
-    - addDifferentRandomColor(VALID_COLORS)
     - hasColor(searched)
 }
-
 SecretCombination .down.> ProposedCombination
-SecretCombination .down.> CombinationValidator
 SecretCombination .down.> Result
+
+class ProposedCombination{
+    - String colors    
+
+    + ask(VALID_COLORS, COMBINATION_LENGTH)   
+    + getColor(index)
+    + getLength()    
+    + show() 
+    - isValid(VALID_COLORS, COMBINATION_LENGTH)
+    - hasValidLength(COMBINATION_LENGTH)
+    - hasValidColors(VALID_COLORS)
+    - hasUniqueColors()
+    - getErrorMsg(VALID_COLORS, COMBINATION_LENGTH)
+}
 
 class Result{
     -blacks
@@ -67,21 +56,6 @@ class Result{
     + initResult(blacks, whites)
     + isWinner(expectedBlacks)
     + show()    
-}
-
-class CombinationValidator {            
-    - COMBINATION_LENGTH
-    - VALID_COLORS
-    - DUPLICATED_COLORS_ALLOWED
-    - colors
-    
-    + setColors(colors)
-    + isLengthValid()
-    + hasValidColors()
-    + isDuplicatedColorsRuleValid()
-    + getVALID_COLORS()
-    - hasDuplicatedColors()
-    
 }
 
 class YesNoDialog {
