@@ -49,9 +49,8 @@ Task's description contains what's <i>new</i> vs previous task.
 ### Task3: js_v0.3
 - New Design Principles to practice:
     - Avoid antipattern Functional Descomposition
-    - Classify using different strategies and be inspired by the domain model  
     - Information Expert Pattern / General Principle of Assignment of Responsibilities  
+    - Classification strategies and collaboration relationships adapting the domain model.
 
-- Analysis:
+- [Analysis](./analysis.md)
 
-![Analysys](./analysis.svg)

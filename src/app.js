@@ -2,11 +2,10 @@ const { Console } = require("console-mpds");
 
 const consoleMPDS = new Console();
 
-initMastermind().play();
+initMastermind().main();
 
 function initMastermind() {
-    const that = {        
-        game: null,
+    const that = {                
         continueDialog: initYesNoDialog("Do you want to continue?"),
 
         showTitle: function () {
@@ -15,11 +14,10 @@ function initMastermind() {
     };
 
     return {
-        play: function () {
+        main: function () {
             that.showTitle();
             do {
-                game = initGame();
-                game.play();
+                initGame().play();                
                 that.continueDialog.ask();
             } while (that.continueDialog.isAffirmative());
         }
@@ -35,26 +33,30 @@ function initGame() {
         proposeds: [],
 
         isEndGame: function () {
-            return this.isLastProposedWinner() || this.proposeds.length === this.MAX_ATTEMPTS;
+            return this.isWinner() || this.isLoser();
         },
 
-        isLastProposedWinner: function () {
+        isWinner: function () {
             const lastProposed = this.proposeds[this.proposeds.length - 1];
-            return this.secret.getResult(lastProposed).isWinner(lastProposed.getLength());
+            return this.secret.isWinner(lastProposed);
+        },
+
+        isLoser: function () {
+            return this.proposeds.length === this.MAX_ATTEMPTS;
         },
 
         show: function () {
             consoleMPDS.writeln(`\n${this.proposeds.length} attempt(s):`);
-            this.secret.show();
+            this.secret.showSecret();
             for (let proposed of this.proposeds) {
                 proposed.show();
                 consoleMPDS.write(' --> ');
-                this.secret.getResult(proposed).show();
+                this.secret.showResult(proposed);
             }
         },
 
         showEndMsg: function () {
-            consoleMPDS.writeln(`You've ${this.isLastProposedWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
+            consoleMPDS.writeln(`You've ${this.isWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
         }
     };
 
@@ -78,6 +80,19 @@ function initSecretCombination(VALID_COLORS, COMBINATION_LENGTH) {
     const that = {       
         colors: "",
 
+        getResult: function (proposed) {
+            let blacks = 0;
+            let whites = 0;
+            for (let i = 0; i < this.colors.length; i++) {
+                if (this.colors[i] === proposed.getColor(i)) {
+                    blacks++;
+                } else if (this.hasColor(proposed.getColor(i))) {
+                    whites++;
+                }
+            }
+            return initResult(blacks, whites);
+        },
+
         hasColor: function (searched) {            
             for (let color of this.colors) {
                 if (color === searched) {
@@ -85,7 +100,7 @@ function initSecretCombination(VALID_COLORS, COMBINATION_LENGTH) {
                 }
             }
             return false;
-        }
+        }        
     };
 
     for (let i = 0; i < COMBINATION_LENGTH; i++){
@@ -96,27 +111,22 @@ function initSecretCombination(VALID_COLORS, COMBINATION_LENGTH) {
         that.colors += newColor;
     }
 
-    return {        
-        getResult: function (proposed) {
-            let blacks = 0;
-            let whites = 0;
-            for (let i = 0; i < that.colors.length; i++) {
-                if (that.colors[i] === proposed.getColor(i)) {
-                    blacks++;
-                } else if (that.hasColor(proposed.getColor(i))) {
-                    whites++;
-                }
-            }
-            return initResult(blacks, whites);
-        },
+    return {                 
+        isWinner: function (proposed) {
+            return that.getResult(proposed).isWinner(that.colors.length);
+        }, 
 
-        show: function () {
+        showSecret: function () {
             const HIDDEN_CHAR = '*';
             let msg = '';
             for (let i = 0; i < that.colors.length; i++) {
                 msg += HIDDEN_CHAR;
             }
             consoleMPDS.writeln(msg);
+        },
+        
+        showResult: function (proposed) {
+            that.getResult(proposed).show();
         }
     };
 }
@@ -191,10 +201,6 @@ function initProposedCombination() {
             return that.colors[index];
         },
 
-        getLength: function () {
-            return that.colors.length;
-        },
-
         show: function () {
             consoleMPDS.write(that.colors);
         }
@@ -208,8 +214,8 @@ function initResult(blacks, whites) {
     };
 
     return {
-        isWinner: function (expectedBlacks) {
-            return that.blacks === expectedBlacks;
+        isWinner: function (winnerCount) {
+            return that.blacks === winnerCount;
         },
 
         show: function () {
@@ -220,33 +226,26 @@ function initResult(blacks, whites) {
 
 function initYesNoDialog(question) {
     const that = {
+        YES: "y",
+        NO: "n",
         question: question,
-        answer: undefined,
-        VALID_ANSWERS: ["y", "n"],
-
-        getAffirmative: function () {
-            return this.VALID_ANSWERS[0];
-        },
-
-        getNegative: function () {
-            return this.VALID_ANSWERS[1];
-        }
+        answer: undefined        
     };
 
     return {
         ask: function () {
             let error = false;
             do {
-                that.answer = consoleMPDS.readString(`${that.question} (${that.getAffirmative()}/${that.getNegative()}):`);
-                error = !this.isAffirmative() && that.answer !== that.getNegative();
+                that.answer = consoleMPDS.readString(`${that.question} (${that.YES}/${that.NO}):`);
+                error = !this.isAffirmative() && that.answer !== that.NO;
                 if (error) {
-                    consoleMPDS.writeln(`Please, answer "${that.getAffirmative()}" or "${that.getNegative()}"`);
+                    consoleMPDS.writeln(`Please, answer "${that.YES}" or "${that.NO}"`);
                 }
             } while (error);
         },
 
         isAffirmative: function () {
-            return that.answer === that.getAffirmative();
+            return that.answer === that.YES;
         }
     };
 }

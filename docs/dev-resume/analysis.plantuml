@@ -2,10 +2,10 @@
 
 class Mastermind{  
 
-    + start()
+    + initMastermind()
     - showTitle()    
 }
-Mastermind *--> Game
+Mastermind ..> Game
 Mastermind *--> YesNoDialog
 
 class Game{
@@ -13,22 +13,25 @@ class Game{
     - COMBINATION_LENGTH    
     - MAX_ATTEMPTS
 
+    + initGame()
     + play()        
     - isEndGame()    
-    - isLastProposedWinner()
+    - isWinner()
+    - isLoser()
     - show()
     - showEndMsg()
 }
 Game *--> SecretCombination
 Game *--> "0..10" ProposedCombination
-Game ..> Result
 
 class SecretCombination{
     - String colors
     
-    + SecretCombination(VALID_COLORS, COMBINATION_LENGTH)    
-    + getResult(proposed)
-    + show()
+    + initSecretCombination(VALID_COLORS, COMBINATION_LENGTH)        
+    + isWinner(proposed)
+    + showSecret()
+    + showResult(proposed)
+    - getResult(proposed)
     - hasColor(searched)
 }
 SecretCombination .down.> ProposedCombination
@@ -37,9 +40,9 @@ SecretCombination .down.> Result
 class ProposedCombination{
     - String colors    
 
+    + initProposedCombination()
     + ask(VALID_COLORS, COMBINATION_LENGTH)   
     + getColor(index)
-    + getLength()    
     + show() 
     - isValid(VALID_COLORS, COMBINATION_LENGTH)
     - hasValidLength(COMBINATION_LENGTH)
@@ -53,19 +56,18 @@ class Result{
     -whites
 
     + initResult(blacks, whites)
-    + isWinner(expectedBlacks)
+    + isWinner(winnerCount)
     + show()    
 }
 
 class YesNoDialog {
+    - YES
+    - NO
     - question
-    - answer
-    - VALID_ANSWERS
+    - answer    
 
-    +YesNoDialog(question)
+    + initYesNoDialog(question)
     + ask()
     + isAffirmative()
-    - getAffirmative()
-    - getNegative()
 }
 @enduml
