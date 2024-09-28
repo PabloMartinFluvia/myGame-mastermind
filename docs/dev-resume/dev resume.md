@@ -54,3 +54,14 @@ Task's description contains what's <i>new</i> vs previous task.
 
 - [Analysis](./analysis.md)
 
+### Task4: js_v0.4
+- New Design Principles to practice:
+    - Modular Design: High Cohesion, Low Coupling, Low Granurality
+    - Interface Design: 
+        - Principles of Least Commitment and Least Surprise.
+        - Sufficient, Complete and Primitive Interface Principle
+        - Alternative Classes with Different Interfaces (Smell Code)
+    - Design by Contract.
+
+- [Analysis](./analysis.md)
+

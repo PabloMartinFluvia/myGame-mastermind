@@ -3,7 +3,7 @@
 class Mastermind{  
 
     + initMastermind()
-    - showTitle()    
+    + play()    
 }
 Mastermind ..> Game
 Mastermind *--> YesNoDialog
@@ -14,25 +14,18 @@ class Game{
     - MAX_ATTEMPTS
 
     + initGame()
-    + play()        
-    - isEndGame()    
-    - isWinner()
-    - isLoser()
-    - show()
-    - showEndMsg()
+    + play()      
 }
 Game *--> SecretCombination
 Game *--> "0..10" ProposedCombination
+Game .down.> Result
 
 class SecretCombination{
     - String colors
     
-    + initSecretCombination(VALID_COLORS, COMBINATION_LENGTH)        
-    + isWinner(proposed)
-    + showSecret()
-    + showResult(proposed)
-    - getResult(proposed)
-    - hasColor(searched)
+    + initSecretCombination(VALID_COLORS, COMBINATION_LENGTH)    
+    + getResult(proposed)
+    + show()    
 }
 SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
@@ -44,19 +37,15 @@ class ProposedCombination{
     + ask(VALID_COLORS, COMBINATION_LENGTH)   
     + getColor(index)
     + show() 
-    - isValid(VALID_COLORS, COMBINATION_LENGTH)
-    - hasValidLength(COMBINATION_LENGTH)
-    - hasValidColors(VALID_COLORS)
-    - hasUniqueColors()
-    - getErrorMsg(VALID_COLORS, COMBINATION_LENGTH)
 }
 
 class Result{
-    -blacks
-    -whites
+    - blacks
+    - whites
+    - winnerBlacks
 
-    + initResult(blacks, whites)
-    + isWinner(winnerCount)
+    + initResult(blacks, whites, winnerBlacks)
+    + isWinner()
     + show()    
 }
 

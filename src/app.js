@@ -2,22 +2,26 @@ const { Console } = require("console-mpds");
 
 const consoleMPDS = new Console();
 
-initMastermind().main();
+initMastermind().play();
 
 function initMastermind() {
-    const that = {                
+    const that = {
         continueDialog: initYesNoDialog("Do you want to continue?"),
 
         showTitle: function () {
             consoleMPDS.writeln(`----- MASTERMIND -----`);
+        },
+
+        assertInvariant: function () {
+            assert
         }
     };
 
     return {
-        main: function () {
+        play: function () {
             that.showTitle();
             do {
-                initGame().play();                
+                initGame().play();
                 that.continueDialog.ask();
             } while (that.continueDialog.isAffirmative());
         }
@@ -38,7 +42,7 @@ function initGame() {
 
         isWinner: function () {
             const lastProposed = this.proposeds[this.proposeds.length - 1];
-            return this.secret.isWinner(lastProposed);
+            return this.secret.getResult(lastProposed).isWinner();
         },
 
         isLoser: function () {
@@ -47,22 +51,36 @@ function initGame() {
 
         show: function () {
             consoleMPDS.writeln(`\n${this.proposeds.length} attempt(s):`);
-            this.secret.showSecret();
+            this.secret.show();
             for (let proposed of this.proposeds) {
                 proposed.show();
                 consoleMPDS.write(' --> ');
-                this.secret.showResult(proposed);
+                this.secret.getResult(proposed).show();
             }
         },
 
         showEndMsg: function () {
             consoleMPDS.writeln(`You've ${this.isWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
+        },
+
+        assertInvariant: function () {
+            assert(this.secret ?? false);
+            assert(typeof this.secret.getResult === "function");
+            assert(typeof this.secret.show === "function");
+            assert(0 <= that.proposeds.length && that.proposeds.length <= that.MAX_ATTEMPTS);
+            for (let proposed of this.proposeds) {
+                assert(typeof proposed.show === "function");
+            }
         }
     };
 
+    that.secret = initSecretCombination(that.VALID_COLORS, that.COMBINATION_LENGTH);
+    that.assertInvariant();
+
     return {
         play: function () {
-            that.secret = initSecretCombination(that.VALID_COLORS, that.COMBINATION_LENGTH);            
+            that.assertInvariant();
+
             that.show();
             do {
                 const proposed = initProposedCombination();
@@ -71,62 +89,67 @@ function initGame() {
                 that.show();
             } while (!that.isEndGame());
             that.showEndMsg();
+
+            that.assertInvariant();
         }
     };
 }
 
 function initSecretCombination(VALID_COLORS, COMBINATION_LENGTH) {
+    assert(COMBINATION_LENGTH > 0);
+    assert(VALID_COLORS.length > COMBINATION_LENGTH);
 
-    const that = {       
+    const that = {
         colors: "",
 
-        getResult: function (proposed) {
-            let blacks = 0;
-            let whites = 0;
-            for (let i = 0; i < this.colors.length; i++) {
-                if (this.colors[i] === proposed.getColor(i)) {
-                    blacks++;
-                } else if (this.hasColor(proposed.getColor(i))) {
-                    whites++;
-                }
-            }
-            return initResult(blacks, whites);
-        },
-
-        hasColor: function (searched) {            
+        hasColor: function (searched) {
             for (let color of this.colors) {
                 if (color === searched) {
                     return true;
                 }
             }
             return false;
-        }        
+        },
+
+        assertInvariant: function () {
+            // TODO
+        }
     };
 
-    for (let i = 0; i < COMBINATION_LENGTH; i++){
+    for (let i = 0; i < COMBINATION_LENGTH; i++) {
         let newColor;
         do {
-            newColor = VALID_COLORS[parseInt(Math.random() * VALID_COLORS.length)];                    
+            newColor = VALID_COLORS[parseInt(Math.random() * VALID_COLORS.length)];
         } while (that.hasColor(newColor));
         that.colors += newColor;
     }
 
-    return {                 
-        isWinner: function (proposed) {
-            return that.getResult(proposed).isWinner(that.colors.length);
-        }, 
+    that.assertInvariant();
 
-        showSecret: function () {
+    return {
+        getResult: function (proposed) {
+            assert(proposed ?? false);
+            assert(typeof proposed.getColor === "function");
+
+            let blacks = 0;
+            let whites = 0;
+            for (let i = 0; i < that.colors.length; i++) {
+                if (that.colors[i] === proposed.getColor(i)) {
+                    blacks++;
+                } else if (that.hasColor(proposed.getColor(i))) {
+                    whites++;
+                }
+            }
+            return initResult(blacks, whites, that.colors.length);
+        },
+
+        show: function () {
             const HIDDEN_CHAR = '*';
             let msg = '';
             for (let i = 0; i < that.colors.length; i++) {
                 msg += HIDDEN_CHAR;
             }
             consoleMPDS.writeln(msg);
-        },
-        
-        showResult: function (proposed) {
-            that.getResult(proposed).show();
         }
     };
 }
@@ -169,7 +192,7 @@ function initProposedCombination() {
             return true;
         },
 
-        getErrorMsg: function (VALID_COLORS, COMBINATION_LENGTH) {            
+        getErrorMsg: function (VALID_COLORS, COMBINATION_LENGTH) {
             if (!this.hasValidLength(COMBINATION_LENGTH)) {
                 return `Wrong proposed combination length`;
             } else if (!this.hasValidColors(VALID_COLORS)) {
@@ -183,10 +206,19 @@ function initProposedCombination() {
             }
             return undefined;
         },
+
+        assertInvariant: function (VALID_COLORS, COMBINATION_LENGTH) {
+            assert(this.colors === "" || this.isValid(VALID_COLORS, COMBINATION_LENGTH));
+        }
     };
+
+    that.assertInvariant();
 
     return {
         ask: function (VALID_COLORS, COMBINATION_LENGTH) {
+            assert(COMBINATION_LENGTH > 0);
+            assert(VALID_COLORS.length > COMBINATION_LENGTH);
+
             let error;
             do {
                 that.colors = consoleMPDS.readString(`Propose a combination:`);
@@ -195,9 +227,13 @@ function initProposedCombination() {
                     consoleMPDS.writeln(that.getErrorMsg(VALID_COLORS, COMBINATION_LENGTH));
                 }
             } while (error);
+
+            that.assertInvariant(VALID_COLORS, COMBINATION_LENGTH);
         },
 
         getColor: function (index) {
+            assert(0 <= index && index < that.colors.length);
+
             return that.colors[index];
         },
 
@@ -207,15 +243,25 @@ function initProposedCombination() {
     };
 }
 
-function initResult(blacks, whites) {
+function initResult(blacks, whites, winnerBlacks) {
+
     const that = {
         blacks: blacks,
-        whites: whites
+        whites: whites,
+        winnerBlacks: winnerBlacks,
+
+        assertInvariant: function () {
+            assert(blacks >= 0);
+            assert(whites >= 0);
+            assert(winnerBlacks >= blacks + whites);
+        }
     };
 
+    that.assertInvariant();
+
     return {
-        isWinner: function (winnerCount) {
-            return that.blacks === winnerCount;
+        isWinner: function () {
+            return that.blacks === that.winnerBlacks;
         },
 
         show: function () {
@@ -229,11 +275,20 @@ function initYesNoDialog(question) {
         YES: "y",
         NO: "n",
         question: question,
-        answer: undefined        
+        answer: undefined,
+
+        assertInvariant: function () {
+            assert(typeof this.question === "string");
+            assert(this.answer === undefined || this.answer === this.YES || this.answer === this.NO);
+        }
     };
+
+    that.assertInvariant();
 
     return {
         ask: function () {
+            that.assertInvariant();
+
             let error = false;
             do {
                 that.answer = consoleMPDS.readString(`${that.question} (${that.YES}/${that.NO}):`);
@@ -242,10 +297,22 @@ function initYesNoDialog(question) {
                     consoleMPDS.writeln(`Please, answer "${that.YES}" or "${that.NO}"`);
                 }
             } while (error);
+
+            that.assertInvariant();
         },
 
         isAffirmative: function () {
             return that.answer === that.YES;
         }
     };
+}
+
+function assert(condition, msg) {
+    if (!condition) {
+        if (msg !== undefined) {
+            console.log(`Assertion Error: ` + msg);
+        }
+        const assertionError = null;
+        assertionError = 2;
+    }
 }
