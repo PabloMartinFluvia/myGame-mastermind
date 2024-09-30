@@ -1,11 +1,11 @@
 # Problems solved in this commit:
 
-1. The invariant in SecretCombination & ProposedCombination:
-    - In SecretCombination is assert colors property is valid
-    - In ProposedCombination is assert colors property is valid or not inicialized.
-    - So both requires the logic wich validates colors property. If coded in both -> DRY
+1. Method hasUniqueColors in CombinationValidator don't access any property (sign of low cohesion).
+- Solution: add property colors (value provided when instantiation) and avoid pass it as argument.
 
-- Solution: create a class CombinationValidator to assume the responsibility of validate a the colors value. It implies to assume the resonibility of know wich are the valid values related to a valid combination's colors.
-- Due this reassigment of responsibilities, none other class should know the constants VALID_COLORS and COMBINATION_LENGTH.
+2. Propoerty colors in SecretCombination, ProposedCombination and CombinationValidator:
+    - This 3 clases have the property colors, wich represent the colors of one combination.
+    - Although changing the data structure in one of them would only involve making changes to that class, it would be more cohesive if there was only one class that had that property.
 
+- Solution: CombinationValidator renamed to Combination + reasigment of responsibilities to do: all management that requires access to any combination of colors.
 

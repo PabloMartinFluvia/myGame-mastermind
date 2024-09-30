@@ -19,45 +19,47 @@ Game *--> "0..10" ProposedCombination
 Game .down.> Result
 
 class SecretCombination{
-    - String colors
     
     + initSecretCombination()    
     + getResult(proposed)
     + show()    
 
 }
-SecretCombination .down.> CombinationValidator
+SecretCombination *-down-> Combination
 SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
 
-class CombinationValidator{
-    + COMBINATION_LENGTH
-    + VALID_COLORS    
+class Combination{
+    - VALID_LENGTH
+    - VALID_COLORS    
+    - colors
 
-    + initCombinationValidator()
-    + hasValidLength(colors)
-    + hasValidColors(colors)
-    + hasUniqueColors(colors)
-    + getRandomValidColor()
-    + validColorsToString()
+    + initCombination(colors)
+    + getRandomCombination()
+    + containsColor(searched)  
+    + isValid()
+    + getErrorMsg()
+    + getColor(index)
+    + getLength()      
+    + show()
 }
 
 class ProposedCombination{
-    - String colors    
 
     + initProposedCombination()
     + ask()   
     + getColor(index)
+    + getLength()    
     + show() 
 }
-ProposedCombination .down.> CombinationValidator
+ProposedCombination *-down-> Combination
 
 class Result{
     - SECRET_LENGTH
     - blacks
     - whites
 
-    + initResult(blacks, whites, secretLength)
+    + initResult(secretLength, blacks, whites)
     + isWinner()
     + show()    
 }

@@ -7,6 +7,7 @@
     * [Task 1](#task-1-js_v01)
     * [Task 2](#task-2-js_v020-js_v021-js_v022-js_v023)
     * [Task 3](#task3-js_v03)
+    * [Task 4](#task4-js_v04)
 
 ## Intro
 This project has been used for practice:
@@ -51,8 +52,6 @@ Task's description contains what's <i>new</i> vs previous task.
     - Avoid antipattern Functional Descomposition
     - Information Expert Pattern / General Principle of Assignment of Responsibilities  
     - Classification strategies and collaboration relationships adapting the domain model.
-
-- [Analysis](./analysis.md)
 
 ### Task4: js_v0.4
 - New Design Principles to practice:
