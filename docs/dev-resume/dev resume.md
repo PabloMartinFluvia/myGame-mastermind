@@ -60,8 +60,18 @@ Task's description contains what's <i>new</i> vs previous task.
     - Interface Design: 
         - Principles of Least Commitment and Least Surprise.
         - Sufficient, Complete and Primitive Interface Principle
-        - Alternative Classes with Different Interfaces (Smell Code)
+        - Related Smell Codes
     - Design by Contract.
+    - Implementation Design:
+        - Cohesion:
+            - Functions Should Do One Thing
+            - Single Responsibility Principle
+            - Related Smell Codes
+        - Coupling:
+            - Demeter Laws (aka Do not talk to strangers, Chain of Message)
+            - Related Smell Codes
+        - Granurality:
+            - Related Smell Codes
 
 - [Analysis](./analysis.md)
 

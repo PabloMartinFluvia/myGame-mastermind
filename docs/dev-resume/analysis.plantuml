@@ -9,8 +9,6 @@ Mastermind ..> Game
 Mastermind *--> YesNoDialog
 
 class Game{
-    - VALID_COLORS
-    - COMBINATION_LENGTH    
     - MAX_ATTEMPTS
 
     + initGame()
@@ -23,28 +21,43 @@ Game .down.> Result
 class SecretCombination{
     - String colors
     
-    + initSecretCombination(VALID_COLORS, COMBINATION_LENGTH)    
+    + initSecretCombination()    
     + getResult(proposed)
     + show()    
+
 }
+SecretCombination .down.> CombinationValidator
 SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
+
+class CombinationValidator{
+    + COMBINATION_LENGTH
+    + VALID_COLORS    
+
+    + initCombinationValidator()
+    + hasValidLength(colors)
+    + hasValidColors(colors)
+    + hasUniqueColors(colors)
+    + getRandomValidColor()
+    + validColorsToString()
+}
 
 class ProposedCombination{
     - String colors    
 
     + initProposedCombination()
-    + ask(VALID_COLORS, COMBINATION_LENGTH)   
+    + ask()   
     + getColor(index)
     + show() 
 }
+ProposedCombination .down.> CombinationValidator
 
 class Result{
+    - SECRET_LENGTH
     - blacks
     - whites
-    - winnerBlacks
 
-    + initResult(blacks, whites, winnerBlacks)
+    + initResult(blacks, whites, secretLength)
     + isWinner()
     + show()    
 }
