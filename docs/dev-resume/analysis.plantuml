@@ -5,7 +5,7 @@ class Mastermind{
     + initMastermind()
     + play()    
 }
-Mastermind ..> Game
+Mastermind *--> Game
 Mastermind *--> YesNoDialog
 
 class Game{
@@ -36,8 +36,8 @@ class Combination{
     - colors
 
     + initCombination(colors)
-    + getRandomValidColor()
     + validColorsToString()
+    + getRandomValidColor()    
     + addColor(color)
     + containsColor(searched)      
     + getColor(index)
@@ -58,19 +58,18 @@ class ProposedCombination{
 
     + initProposedCombination()
     + ask()   
-    + getColor(index)
-    + getLength()    
+    + getCombination()  
     + show() 
 }
-ProposedCombination *-down-> Combination
+ProposedCombination *-down-> Combination 
 ProposedCombination .down.> ValidationResult
 
 class Result{
-    - SECRET_LENGTH
+    - combinationLength
     - blacks
     - whites
 
-    + initResult(secretLength, blacks, whites)
+    + initResult(combinationLength, blacks, whites)
     + isWinner()
     + show()    
 }
