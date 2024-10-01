@@ -1,11 +1,20 @@
 # Problems solved in this commit:
 
-1. Method hasUniqueColors in CombinationValidator don't access any property (sign of low cohesion).
-- Solution: add property colors (value provided when instantiation) and avoid pass it as argument.
+1. Method getRandomCombination in Combination:
+    - This process shouldn't be accesible for ProposedCombination. The process of create a a valid combination randomly it's a responsibility of SecretCombination.
+- Solution: implement the logic in SecretCombination, using as much as possible the others publics methods (primitives).
 
-2. Propoerty colors in SecretCombination, ProposedCombination and CombinationValidator:
-    - This 3 clases have the property colors, wich represent the colors of one combination.
-    - Although changing the data structure in one of them would only involve making changes to that class, it would be more cohesive if there was only one class that had that property.
-
-- Solution: CombinationValidator renamed to Combination + reasigment of responsibilities to do: all management that requires access to any combination of colors.
+2. Method getErrorMsg in Combination:
+    - This process shouldn't be accesible for SecretCombination. The only class interested to the error message when validation failed is ProposedCombination.
+    - Move method to ProposedCombination it's not a valid solution:
+        1. It would require make public hasValidLength(), hasValidColors(), hasUniqueColors() in Combination.
+        2. This change would require remove isValid() in Combination (it wouldn't be a primitive method).
+        3. This change would force repeated code (DRY) in ProposedCombination and SecretCombination. At least in the assertion of the invariant.
+        ~~~
+        combination.hasValidLength() 
+            && combination.hasValidColors() 
+                && combination.hasUniqueColors()
+        ~~~
+- Solution: replace isValid() and getErrorMsg() by getValidationResult(), wich returns an enum. For evaluate if Combination isValid the value must be ValidateResult.OK, and in fuction of the other values, ProposedCombination can choose the error msg.
+            
 

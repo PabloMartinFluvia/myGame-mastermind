@@ -28,6 +28,7 @@ class SecretCombination{
 SecretCombination *-down-> Combination
 SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
+SecretCombination .down.> ValidationResult
 
 class Combination{
     - VALID_LENGTH
@@ -35,13 +36,22 @@ class Combination{
     - colors
 
     + initCombination(colors)
-    + getRandomCombination()
-    + containsColor(searched)  
-    + isValid()
-    + getErrorMsg()
+    + getRandomValidColor()
+    + validColorsToString()
+    + addColor(color)
+    + containsColor(searched)      
     + getColor(index)
-    + getLength()      
+    + getLength()          
+    + getValidationResult()
     + show()
+}
+Combination .down.> ValidationResult
+
+enum ValidationResult{
+    OK
+    INVALID_LENGTH
+    INVALID_COLORS
+    REPEATED_COLORS
 }
 
 class ProposedCombination{
@@ -53,6 +63,7 @@ class ProposedCombination{
     + show() 
 }
 ProposedCombination *-down-> Combination
+ProposedCombination .down.> ValidationResult
 
 class Result{
     - SECRET_LENGTH
