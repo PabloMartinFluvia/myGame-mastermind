@@ -1,5 +1,0 @@
-# Analysis
-
-![Analysys](./analysis.svg)
-
-

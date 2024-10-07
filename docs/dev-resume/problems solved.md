@@ -1,4 +1,3 @@
 # Problems solved in this commit:
-just some ranaming and change some object's methods order for readability.
-            
+Decouple models from in/out technologies.            
 

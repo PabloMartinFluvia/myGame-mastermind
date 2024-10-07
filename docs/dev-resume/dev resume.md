@@ -8,6 +8,8 @@
     * [Task 2](#task-2-js_v020-js_v021-js_v022-js_v023)
     * [Task 3](#task3-js_v03)
     * [Task 4](#task4-js_v04)
+    * [Task 5](#task5-js_v05)
+* [Analysis](#analysis)
 
 ## Intro
 This project has been used for practice:
@@ -72,5 +74,11 @@ Task's description contains what's <i>new</i> vs previous task.
         - Granurality:
             - Related Smell Codes
 
-- [Analysis](./analysis.md)
+### Task5: js_v0.5
+- Task:
+    - Uncouple models from presentation technologies -> add views
+
+## Analysis
+
+![Analysys](./analysis.svg)
 

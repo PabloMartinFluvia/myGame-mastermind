@@ -1,36 +1,93 @@
 @startuml analysis
 
-class Mastermind{  
+class Mastermind #LightGoldenRodYellow {  
 
     + initMastermind()
     + play()    
 }
 Mastermind *--> Game
+Mastermind *--> GameView
 Mastermind *--> YesNoDialog
+Mastermind ..> EnumSetUp
 
-class Game{
+class GameView #LightGreen {
+
+    + initGameView(game)
+    + play()
+}
+note top
+Extra coupling:
+SecretCombination,
+ProposedCombination,
+Result
+end note
+GameView -down-> Game
+GameView *--> SecretCombinationView
+GameView *--> ProposedCombinationView
+GameView *--> ResultView
+
+
+class SecretCombinationView #LightGreen {
+    
+    + initSecretCombinationView()
+    + show(secret)
+}
+SecretCombinationView ..> SecretCombination
+
+class ProposedCombinationView #LightGreen {
+    
+    + initProposedCombinationView()
+    + ask()
+    + show(proposed)
+}
+ProposedCombinationView ..> ProposedCombination
+ProposedCombinationView ..> ValidationError
+ProposedCombinationView ..> ValidationErrorView
+
+class ValidationErrorView #LightGreen {
+
+    - MESSAGES
+    
+    + show(validationError)
+}
+ValidationErrorView ..> ValidationError
+ValidationErrorView ..> Combination
+
+class ResultView #LightGreen {
+    
+    + initResultView()
+    + show(result)
+}
+ResultView ..> Result
+
+class Game #Wheat{
     - MAX_ATTEMPTS
 
     + initGame()
-    + play()      
+    + addProposed(proposed)
+    + isWinner()
+    + isMaxAttempts()
+    + getProposeds()
+    + getSecret()
+    + reset()    
 }
 Game *--> SecretCombination
-Game *--> "0..10" ProposedCombination
+Game o--> "0..10" ProposedCombination
 Game .down.> Result
 
-class SecretCombination{
+class SecretCombination #Wheat{
     
     + initSecretCombination()    
     + getResult(proposed)
-    + show()    
+    + getLength()     
 
 }
 SecretCombination *-down-> Combination
 SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
-SecretCombination .down.> ValidationResult
+SecretCombination .down.> ValidationError
 
-class Combination{
+class Combination #Wheat{
     - VALID_LENGTH
     - VALID_COLORS    
     - colors
@@ -42,39 +99,43 @@ class Combination{
     + containsColor(searched)      
     + getColor(index)
     + getLength()          
-    + getValidationResult()
-    + show()
+    + getValidationError()
+    + toString()
 }
-Combination .down.> ValidationResult
+Combination .down.> ValidationError
 
-enum ValidationResult{
-    OK
+enum ValidationError #Wheat{    
     INVALID_LENGTH
     INVALID_COLORS
     REPEATED_COLORS
+    NULL
+
+    + isNull()
+    + ordinal()
 }
 
-class ProposedCombination{
+class ProposedCombination #Wheat{
 
-    + initProposedCombination()
-    + ask()   
-    + getCombination()  
-    + show() 
+    + initProposedCombination(colors)        
+    + getValidationError()
+    + getColor(index)   
+    + toString()   
 }
 ProposedCombination *-down-> Combination 
-ProposedCombination .down.> ValidationResult
+ProposedCombination .down.> ValidationError
 
-class Result{
+class Result #Wheat{
     - combinationLength
     - blacks
     - whites
 
     + initResult(combinationLength, blacks, whites)
     + isWinner()
-    + show()    
+    + getBlacks()    
+    + getWhites()    
 }
 
-class YesNoDialog {
+class YesNoDialog #LightGreen {
     - YES
     - NO
     - question
@@ -84,4 +145,11 @@ class YesNoDialog {
     + ask()
     + isAffirmative()
 }
+
+class EnumSetUp #LightSteelBlue {
+    + initEnumSetUp()
+    + setUp()
+}
+EnumSetUp ..> ValidationError
+
 @enduml
