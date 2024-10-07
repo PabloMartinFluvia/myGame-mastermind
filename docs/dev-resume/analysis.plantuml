@@ -80,6 +80,7 @@ class SecretCombination #Wheat{
     + initSecretCombination()    
     + getResult(proposed)
     + getLength()     
+    + reset()
 
 }
 SecretCombination *-down-> Combination
