@@ -5,26 +5,20 @@ class Mastermind #LightGoldenRodYellow {
     + initMastermind()
     + play()    
 }
-Mastermind *--> Game
 Mastermind *--> GameView
 Mastermind *--> YesNoDialog
+Mastermind *--> Game
 Mastermind ..> EnumSetUp
 
 class GameView #LightGreen {
 
-    + initGameView(game)
-    + play()
+    + initGameView()
+    + play(game)
 }
-note top
-Extra coupling:
-SecretCombination,
-ProposedCombination,
-Result
-end note
-GameView -down-> Game
 GameView *--> SecretCombinationView
 GameView *--> ProposedCombinationView
 GameView *--> ResultView
+GameView ..> Game
 
 
 class SecretCombinationView #LightGreen {
@@ -40,18 +34,17 @@ class ProposedCombinationView #LightGreen {
     + ask()
     + show(proposed)
 }
+ProposedCombinationView *--> ValidationErrorView
 ProposedCombinationView ..> ProposedCombination
-ProposedCombinationView ..> ValidationError
-ProposedCombinationView ..> ValidationErrorView
 
 class ValidationErrorView #LightGreen {
 
     - MESSAGES
     
+    + initValidationErrorView(validColorsMsg)
     + show(validationError)
 }
 ValidationErrorView ..> ValidationError
-ValidationErrorView ..> Combination
 
 class ResultView #LightGreen {
     
@@ -65,10 +58,12 @@ class Game #Wheat{
 
     + initGame()
     + addProposed(proposed)
+    + getAttempts()    
+    + getProposed(index)
+    + getResult(index)
     + isWinner()
-    + isMaxAttempts()
-    + getProposeds()
-    + getSecret()
+    + isMaxAttempts()    
+    + getSecret()    
     + reset()    
 }
 Game *--> SecretCombination
@@ -86,7 +81,6 @@ class SecretCombination #Wheat{
 SecretCombination *-down-> Combination
 SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
-SecretCombination .down.> ValidationError
 
 class Combination #Wheat{
     - VALID_LENGTH
@@ -95,12 +89,13 @@ class Combination #Wheat{
 
     + initCombination(colors)
     + validColorsToString()
-    + getRandomValidColor()    
-    + addColor(color)
-    + containsColor(searched)      
-    + getColor(index)
-    + getLength()          
+    + getRandomValidColor()
+    + isValid()    
     + getValidationError()
+    + containsColor(searched)    
+    + addColor(color)          
+    + getColor(index)
+    + getLength()      
     + toString()
 }
 Combination .down.> ValidationError
@@ -117,13 +112,14 @@ enum ValidationError #Wheat{
 
 class ProposedCombination #Wheat{
 
-    + initProposedCombination(colors)        
+    + initProposedCombination(colors)  
+    + validColorsToString() 
+    + isValid()         
     + getValidationError()
     + getColor(index)   
     + toString()   
 }
 ProposedCombination *-down-> Combination 
-ProposedCombination .down.> ValidationError
 
 class Result #Wheat{
     - combinationLength
