@@ -2,7 +2,7 @@
 
 class Mastermind #LightGoldenRodYellow {  
 
-    + initMastermind()
+    + Mastermind()
     + play()    
 }
 Mastermind *--> GameView
@@ -12,7 +12,7 @@ Mastermind ..> EnumSetUp
 
 class GameView #LightGreen {
 
-    + initGameView()
+    + GameView()
     + play(game)
 }
 GameView *--> SecretCombinationView
@@ -23,14 +23,14 @@ GameView ..> Game
 
 class SecretCombinationView #LightGreen {
     
-    + initSecretCombinationView()
+    + SecretCombinationView()
     + show(secret)
 }
 SecretCombinationView ..> SecretCombination
 
 class ProposedCombinationView #LightGreen {
     
-    + initProposedCombinationView()
+    + ProposedCombinationView()
     + ask()
     + show(proposed)
 }
@@ -39,24 +39,24 @@ ProposedCombinationView ..> ProposedCombination
 
 class ValidationErrorView #LightGreen {
 
-    - MESSAGES
+    + MESSAGES
     
-    + initValidationErrorView(validColorsMsg)
+    + ValidationErrorView(validColorsMsg)
     + show(validationError)
 }
 ValidationErrorView ..> ValidationError
 
 class ResultView #LightGreen {
     
-    + initResultView()
+    + ResultView()
     + show(result)
 }
 ResultView ..> Result
 
 class Game #Wheat{
-    - MAX_ATTEMPTS
+    + MAX_ATTEMPTS
 
-    + initGame()
+    + Game()
     + addProposed(proposed)
     + getAttempts()    
     + getProposed(index)
@@ -72,7 +72,7 @@ Game .down.> Result
 
 class SecretCombination #Wheat{
     
-    + initSecretCombination()    
+    + SecretCombination()    
     + getResult(proposed)
     + getLength()     
     + reset()
@@ -83,11 +83,11 @@ SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
 
 class Combination #Wheat{
-    - VALID_LENGTH
-    - VALID_COLORS    
-    - colors
+    + VALID_LENGTH
+    + VALID_COLORS    
+    + colors
 
-    + initCombination(colors)
+    + Combination(colors)
     + validColorsToString()
     + getRandomValidColor()
     + isValid()    
@@ -107,12 +107,12 @@ enum ValidationError #Wheat{
     NULL
 
     + isNull()
-    + ordinal()
+    + getOrdinal()
 }
 
 class ProposedCombination #Wheat{
 
-    + initProposedCombination(colors)  
+    + ProposedCombination(colors)  
     + validColorsToString() 
     + isValid()         
     + getValidationError()
@@ -122,23 +122,23 @@ class ProposedCombination #Wheat{
 ProposedCombination *-down-> Combination 
 
 class Result #Wheat{
-    - combinationLength
-    - blacks
-    - whites
+    + combinationLength
+    + blacks
+    + whites
 
-    + initResult(combinationLength, blacks, whites)
+    + Result(combinationLength, blacks, whites)
     + isWinner()
     + getBlacks()    
     + getWhites()    
 }
 
 class YesNoDialog #LightGreen {
-    - YES
-    - NO
-    - question
-    - answer    
+    + YES
+    + NO
+    + question
+    + answer    
 
-    + initYesNoDialog(question)
+    + YesNoDialog(question)
     + ask()
     + isAffirmative()
 }

@@ -78,7 +78,11 @@ Task's description contains what's <i>new</i> vs previous task.
 - Task:
     - Uncouple models from presentation technologies -> add views
 
+### Task6: js_v0.6
+- Task:
+    - Upgrade previous task usig constructor functions and prototypes.
+
 ## Analysis
 
-![Analysys](./analysis.svg)
+![Analysys](../../out/docs/dev-resume/analysis/analysis.svg)
 
