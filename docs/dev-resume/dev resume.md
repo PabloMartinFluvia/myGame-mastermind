@@ -9,6 +9,7 @@
     * [Task 3](#task3-js_v03)
     * [Task 4](#task4-js_v04)
     * [Task 5](#task5-js_v05)
+    * [Task 6](#task6-js_v06)
 * [Analysis](#analysis)
 
 ## Intro
