@@ -121,13 +121,14 @@ function initGameViewPrototype() {
         function show(game, gameView) {
             assert(game ?? false);
 
+
             const attemptsCount = game.countAttempts();
             consoleMPDS.writeln(`\n${attemptsCount} attempt(s):`);
             gameView.secretCombinationView.show();
-            for (let i = 0; i < attemptsCount; i++) {
-                gameView.proposedCombinationView.show(game.getProposed(i));
+            for (let attempt = 1; attempt <= attemptsCount; attempt++) {
+                gameView.proposedCombinationView.show(game, attempt);
                 consoleMPDS.write(' --> ');
-                gameView.resultView.show(game.getResult(i));
+                gameView.resultView.show(game, attempt);
             }
         }        
     }
@@ -162,10 +163,10 @@ function initProposedCombinationViewPrototype() {
         return proposed;
     };
 
-    ProposedCombinationView.prototype.show = function (proposed) {
-        assert(proposed ?? false);
+    ProposedCombinationView.prototype.show = function (game, attempt) {
+        assert(game ?? false);
 
-        const colors = proposed.getColors();
+        const colors = game.getProposed(attempt - 1).getColors();
         consoleMPDS.write(colors.join(""));
     };
 }
@@ -191,9 +192,9 @@ function ResultView() {
     // without attributes due a dessign
 }
 function initResultViewPrototype() {
-    ResultView.prototype.show = function (result) {
-        assert(result ?? false);
-
+    ResultView.prototype.show = function (game, attempt) {
+        assert(game ?? false);
+        const result = game.getResult(attempt - 1);
         consoleMPDS.writeln(`${result.getBlacks()} blacks and ${result.getWhites()} whites`);
     }
 }
@@ -216,14 +217,8 @@ function initGamePrototype() {
         return this.proposeds.length;
     };
 
-    Game.prototype.getProposed = function (index) {
-        assert(new IntervalOpenClosed(this.countAttempts()).includes(index));      
-
-        return this.proposeds[index];
-    };
-
-    Game.prototype.getResult = function (index) {
-        return this.secret.getResult(this.getProposed(index));
+    Game.prototype.isMaxAttempts = function () {
+        return this.countAttempts() === this.MAX_ATTEMPTS;
     };
 
     Game.prototype.isWinner = function () {
@@ -232,10 +227,16 @@ function initGamePrototype() {
         return this.getResult(this.countAttempts() - 1).isWinner();
     };
 
-    Game.prototype.isMaxAttempts = function () {
-        return this.countAttempts() === this.MAX_ATTEMPTS;
+    Game.prototype.getResult = function (index) {
+        return this.secret.getResult(this.getProposed(index));
     };
 
+    Game.prototype.getProposed = function (index) {
+        assert(new IntervalOpenClosed(this.countAttempts()).includes(index));      
+
+        return this.proposeds[index];
+    };
+    
     Game.prototype.reset = function () {
         this.proposeds = [];
         this.secret.reset();

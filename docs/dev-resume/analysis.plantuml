@@ -34,9 +34,10 @@ class ProposedCombinationView #LightGreen {
     
     + ProposedCombinationView()
     + ask()
-    + show(proposed)
+    + show(game, attempt)
 }
 ProposedCombinationView *--> ValidationErrorView
+ProposedCombinationView ..> Game
 ProposedCombinationView ..> ProposedCombination
 
 class ValidationErrorView #LightGreen {
@@ -53,8 +54,9 @@ ValidationErrorView ..> IntervalOpenClosed
 class ResultView #LightGreen {
     
     + ResultView()
-    + show(result)
+    + show(game, attempt)
 }
+ResultView ..> Game
 ResultView ..> Result
 
 class Game #Wheat{
@@ -62,11 +64,11 @@ class Game #Wheat{
 
     + Game()
     + addProposed(proposed)
-    + countAttempts()    
-    + getProposed(index)
-    + getResult(index)
-    + isWinner()
+    + countAttempts()  
     + isMaxAttempts()  
+    + isWinner()      
+    + getResult(index)
+    + getProposed(index)        
     + reset()    
 }
 Game *--> SecretCombination

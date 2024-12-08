@@ -1,14 +1,13 @@
 # Problem solved in this commit
 
 ## Problem
-- SecretCombinationView has the responsibility to show the secret combination colors, but hidden. To do that only needs to know how many colors has the secret combination. But this value doesn't depends on the secretCombination's state, it's an "app constant" -> there's no need to establish a *use* collaboration to SecretCombination.
+- GameView is coupled to ProposedCombination and Result, but doesn't collaborate with them.
 
 ## Solution
-- Remove the collaboration and store the value as a property in SecretCombinationView.
+- Uncouple GameView to these models.
 
 ## Ideas to consider in the future
 - Enum approach is ok?
-- Simplify how GamwView requests proposeds and results to Game?
 - Better logic to init/reset secret combination?
 - create random combinations in Combination?
 - ProposedCombination is needed?
