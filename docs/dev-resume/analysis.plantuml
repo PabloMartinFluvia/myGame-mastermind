@@ -129,8 +129,7 @@ class ProposedCombination #Wheat{
 
     + ProposedCombination(colors)
     + isValid()         
-    + getValidationError()
-    + getColor(index)   
+    + getValidationError()     
     + getColors()   
 }
 ProposedCombination *-down-> Combination 

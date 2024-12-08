@@ -270,15 +270,15 @@ function initSecretCombinationPrototype() {
 
         let blacks = 0;
         let whites = 0;
-        for (let i = 0; i < this.getLength(); i++) {
-            const colorProposed = proposed.getColor(i);
-            if (colorProposed === this.combination.getColor(i)) {
+        const colorsProposeds = proposed.getColors();
+        for (let i = 0; i < colorsProposeds.length; i++) {            
+            if (colorsProposeds[i] === this.combination.getColor(i)) {
                 blacks++;
-            } else if (this.combination.includes(colorProposed)) {
+            } else if (this.combination.includes(colorsProposeds[i])) {
                 whites++;
             }
         }
-        return new Result(this.getLength(), blacks, whites);
+        return new Result(this.combination.VALID_LENGTH, blacks, whites);
     };
 
     SecretCombination.prototype.getLength = function () {
@@ -314,6 +314,9 @@ function ProposedCombination(colors) {
 }
 function initProposedCombinationPrototype() {
 
+    /**
+     * Combination has a valid length. Elements are unrepeated. Each element is a valid color.     
+     */
     ProposedCombination.prototype.isValid = function () {
         return this.combination.isValid();
     };
@@ -322,17 +325,13 @@ function initProposedCombinationPrototype() {
         return this.combination.getValidationError();
     };
     
-    ProposedCombination.prototype.getColor = function (index) {
-        return this.combination.getColor(index);
-    };
-    
     ProposedCombination.prototype.getColors = function () {
         const colors = [];
         for (let i = 0; i < this.combination.getLength(); i++) {
             colors.push(this.combination.getColor(i));
         }
         return colors;
-    }
+    };
 }
 
 function Combination(colors = []) {

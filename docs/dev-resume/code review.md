@@ -1,14 +1,12 @@
 # Problem solved in this commit
 
 ## Problem
-- There're models with methods 'toString', but it's not needed for de logic.
-
-## Solution
-- Move the responsibility of parse values to a "user friendly format" in views.
-
-## Ideas to consider in the future
 - getColor(index) in ProposedCombination it's not primitive
 
+## Solution
+- Remove method and clients invoke getColors()
+
+## Ideas to consider in the future
 - Enum approach is ok?
 - ProposedCombination is needed?
 - Better logic to init/reset secret combination?
