@@ -1,18 +1,18 @@
 # Problem solved in this commit
 
 ## Problem
-- getColor(index) in ProposedCombination it's not primitive
+- SecretCombinationView has the responsibility to show the secret combination colors, but hidden. To do that only needs to know how many colors has the secret combination. But this value doesn't depends on the secretCombination's state, it's an "app constant" -> there's no need to establish a *use* collaboration to SecretCombination.
 
 ## Solution
-- Remove method and clients invoke getColors()
+- Remove the collaboration and store the value as a property in SecretCombinationView.
 
 ## Ideas to consider in the future
 - Enum approach is ok?
-- ProposedCombination is needed?
-- Better logic to init/reset secret combination?
-- Methods length/count needed?
-- SecretView relation with SecretCombination?
 - Simplify how GamwView requests proposeds and results to Game?
+- Better logic to init/reset secret combination?
+- create random combinations in Combination?
+- ProposedCombination is needed?
+- validate proposed combinations in ProposedCombination?
 
 # TODOs in code review
 1. Simplicity:

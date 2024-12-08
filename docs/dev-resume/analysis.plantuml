@@ -23,11 +23,12 @@ GameView ..> Game
 
 class SecretCombinationView #LightGreen {
     + HIDDEN_COLOR
+    + COMBINATION_LENGTH
     
     + SecretCombinationView()
-    + show(secret)
+    + show()
 }
-SecretCombinationView ..> SecretCombination
+SecretCombinationView ..> Combination
 
 class ProposedCombinationView #LightGreen {
     
@@ -65,8 +66,7 @@ class Game #Wheat{
     + getProposed(index)
     + getResult(index)
     + isWinner()
-    + isMaxAttempts()    
-    + getSecret()    
+    + isMaxAttempts()  
     + reset()    
 }
 Game *--> SecretCombination
@@ -77,8 +77,7 @@ Game ..> IntervalOpenClosed
 class SecretCombination #Wheat{
     
     + SecretCombination()    
-    + getResult(proposed)
-    + getLength()     
+    + getResult(proposed)      
     + reset()
 
 }
@@ -110,7 +109,6 @@ class Combination #Wheat{
     + includes(color)    
     + addColor(color)          
     + getColor(index)
-    + getLength() 
 }
 Combination .down.> ValidationError
 Combination ..> IntervalOpenClosed

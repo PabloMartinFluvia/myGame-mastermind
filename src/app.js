@@ -123,26 +123,24 @@ function initGameViewPrototype() {
 
             const attemptsCount = game.countAttempts();
             consoleMPDS.writeln(`\n${attemptsCount} attempt(s):`);
-            gameView.secretCombinationView.show(game.getSecret());
+            gameView.secretCombinationView.show();
             for (let i = 0; i < attemptsCount; i++) {
                 gameView.proposedCombinationView.show(game.getProposed(i));
                 consoleMPDS.write(' --> ');
                 gameView.resultView.show(game.getResult(i));
             }
-        }
+        }        
     }
 }
 
 function SecretCombinationView() {
     this.HIDDEN_COLOR = '*';
+    this.COMBINATION_LENGTH = new Combination().VALID_LENGTH;
 }
 function initSecretCombinationViewProtoype() {
 
-    SecretCombinationView.prototype.show = function (secret) {
-        assert(secret ?? false);
-
-        
-        consoleMPDS.writeln(this.HIDDEN_COLOR.repeat(secret.getLength()));
+    SecretCombinationView.prototype.show = function () {
+        consoleMPDS.writeln(this.HIDDEN_COLOR.repeat(this.COMBINATION_LENGTH));
     }
 }
 
@@ -238,10 +236,6 @@ function initGamePrototype() {
         return this.countAttempts() === this.MAX_ATTEMPTS;
     };
 
-    Game.prototype.getSecret = function () {
-        return this.secret;
-    };
-
     Game.prototype.reset = function () {
         this.proposeds = [];
         this.secret.reset();
@@ -279,10 +273,6 @@ function initSecretCombinationPrototype() {
             }
         }
         return new Result(this.combination.VALID_LENGTH, blacks, whites);
-    };
-
-    SecretCombination.prototype.getLength = function () {
-        return this.combination.getLength();
     };
 }
 
@@ -326,8 +316,10 @@ function initProposedCombinationPrototype() {
     };
     
     ProposedCombination.prototype.getColors = function () {
+        assert(this.isValid());
+
         const colors = [];
-        for (let i = 0; i < this.combination.getLength(); i++) {
+        for (let i = 0; i < this.combination.VALID_LENGTH; i++) {
             colors.push(this.combination.getColor(i));
         }
         return colors;
@@ -368,7 +360,7 @@ function initCombinationPrototype() {
         return validationError;
 
         function hasValidLength(combination) {
-            return combination.getLength() === combination.VALID_LENGTH;
+            return combination.colors.length === combination.VALID_LENGTH;
         };
 
         function hasValidColors(combination) {            
@@ -405,13 +397,9 @@ function initCombinationPrototype() {
     };
 
     Combination.prototype.getColor = function (index) {
-        assert(new IntervalOpenClosed(this.getLength()).includes(index));        
+        assert(new IntervalOpenClosed(this.colors.length).includes(index));        
 
         return this.colors[index];
-    };
-
-    Combination.prototype.getLength = function () {
-        return this.colors.length;
     };
 }
 
