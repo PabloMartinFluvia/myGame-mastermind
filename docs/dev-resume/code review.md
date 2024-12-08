@@ -1,20 +1,18 @@
 # Problem solved in this commit
 
 ## Problem
-- Game View always collaborates with the same Game object, but in the actual dessig the relation is type *use*.
-- Ídem for ResultView and ProposedCombinationView
+- ValidationError implementation is a *bungle*, to simulate an Enum.
 
 ## Solution
-- Stablish an *association* to Game in these views.
-- Due this change, ProposedCombinationView refactored: doesn't *ask* for a proposed combination and returns it -> *read* the proposed, collaborating with game to store it.
+- Remove this class, use theory learned till now, and wait for Symbols theory.
 
 
 ## Ideas to consider in the future
-- Enum approach is ok?
 - Better logic to init/reset secret combination?
 - create random combinations in Combination?
 - ProposedCombination is needed?
 - validate proposed combinations in ProposedCombination?
+- isValid method needed?
 
 # TODOs in code review
 1. Simplicity:

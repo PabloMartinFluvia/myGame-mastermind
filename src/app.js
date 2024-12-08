@@ -6,29 +6,23 @@ new Mastermind().play();
 
 function Mastermind() {
     initPrototypes();
-    initEnums();
 
     this.game = new Game();
     this.gameView = new GameView(this.game);
     this.continueDialog = new YesNoDialog("Do you want to continue?");
-
-    function initEnums() { // to init simulated enums
-        ValidationError();
-        Object.freeze(ValidationError);
-    };
 
     function initPrototypes() {
         initMastermindPrototype();
         initYesNoDialogProtoype();
         initGameViewPrototype();
         initSecretCombinationViewProtoype();
-        initProposedCombinationViewPrototype();
-        initValidationErrorViewPrototype();
+        initProposedCombinationViewPrototype();        
         initResultViewPrototype();
         initGamePrototype();
         initSecretCombinationPrototype();
         initProposedCombinationPrototype();
         initCombinationPrototype();
+        initErrorPrototype();
         initResultPrototype();
         initIntervalOpenClosedProtorype();
     };
@@ -44,29 +38,6 @@ function initMastermindPrototype() {
                 this.game.reset();
             }
         } while (resume);
-    }
-}
-
-function ValidationError() { // enum aproach
-    ValidationError.INVALID_LENGTH = new ValidationErrorObject(0);
-    ValidationError.INVALID_COLORS = new ValidationErrorObject(1);
-    ValidationError.REPEATED_COLORS = new ValidationErrorObject(2);
-    ValidationError.NULL = new ValidationErrorObject(3);
-
-    initValidationErrorObjectPrototype();
-
-    function ValidationErrorObject(ordinal) {
-        this.ordinal = ordinal;
-    }
-
-    function initValidationErrorObjectPrototype() {
-        ValidationErrorObject.prototype.isNull = function () {
-            return this === ValidationError.NULL;
-        };
-
-        ValidationErrorObject.prototype.getOrdinal = function () {
-            return this.ordinal;
-        };
     }
 }
 
@@ -143,7 +114,6 @@ function initSecretCombinationViewProtoype() {
 
 function ProposedCombinationView(game) {
     assert(game ?? false);
-    this.validationErrorView = new ValidationErrorView();
     this.game = game;
 }
 function initProposedCombinationViewPrototype() {
@@ -155,7 +125,7 @@ function initProposedCombinationViewPrototype() {
             proposed = new ProposedCombination(Array.from(colors));
             error = !proposed.isValid();
             if (error) {
-                this.validationErrorView.show(proposed.getValidationError());
+                consoleMPDS.writeln(proposed.getValidationError().toString());
             }
         } while (error);
         this.game.addProposed(proposed);
@@ -165,23 +135,6 @@ function initProposedCombinationViewPrototype() {
         const colors = this.game.getProposed(attempt - 1).getColors();
         consoleMPDS.write(colors.join(""));
     };
-}
-
-function ValidationErrorView() {       
-    this.MESSAGES = [
-        `Wrong proposed combination length`,
-        `Wrong colors, they must be: ${new Combination().getValids().join("")}`,
-        `Wrong proposed combination, colors can't be repeated`
-    ]
-}
-function initValidationErrorViewPrototype() {
-    ValidationErrorView.prototype.show = function (validationError) {
-        assert(!validationError.isNull());
-        const index = validationError.getOrdinal();
-        assert(new IntervalOpenClosed(this.MESSAGES.length).includes(index));            
-
-        consoleMPDS.writeln(this.MESSAGES[index]);
-    }
 }
 
 function ResultView(game) {
@@ -346,15 +299,15 @@ function initCombinationPrototype() {
     };
 
     Combination.prototype.getValidationError = function () {
-        let validationError = ValidationError.NULL;
+        let error = new Error(this.VALID_COLORS);
         if (!hasValidLength(this)) {
-            validationError = ValidationError.INVALID_LENGTH;
+            error.setInvalidLength();
         } else if (!hasValidColors(this)) {
-            validationError = ValidationError.INVALID_COLORS;
+            error.setInvalidColors();
         } else if (!hasUniqueColors(this)) {
-            validationError = ValidationError.REPEATED_COLORS;
+            error.setRepeatedColors();
         }
-        return validationError;
+        return error;
 
         function hasValidLength(combination) {
             return combination.colors.length === combination.VALID_LENGTH;
@@ -400,6 +353,37 @@ function initCombinationPrototype() {
     };
 }
 
+function Error(validsColors) {
+    this.MESSAGES = [
+        `Wrong proposed combination length`,
+        `Wrong colors, they must be: ${validsColors.join("")}`,
+        `Wrong proposed combination, colors can't be repeated`
+    ];
+    
+    this.index = null;
+}
+function initErrorPrototype() {
+    Error.prototype.setInvalidLength = function () {
+        this.index = 0;
+    };
+
+    Error.prototype.setInvalidColors = function () {
+        this.index = 1;
+    };
+
+    Error.prototype.setRepeatedColors = function () {
+        this.index = 2;
+    };
+
+    Error.prototype.isNull = function () {
+        return this.index === null;
+    };
+
+    Error.prototype.toString = function () {
+        assert(!this.isNull())
+        return this.MESSAGES[this.index];
+    };
+}
 
 /**
  * Max limit is open. Min limit is closed.

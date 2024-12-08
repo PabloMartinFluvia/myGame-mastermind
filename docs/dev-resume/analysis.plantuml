@@ -8,7 +8,6 @@ class Mastermind #LightGoldenRodYellow {
 Mastermind *--> GameView
 Mastermind *--> YesNoDialog
 Mastermind *--> Game
-Mastermind ..> EnumSetUp
 
 class GameView #LightGreen {
 
@@ -36,20 +35,9 @@ class ProposedCombinationView #LightGreen {
     + read()
     + show(attempt)
 }
-ProposedCombinationView *--> ValidationErrorView
 ProposedCombinationView --> Game
 ProposedCombinationView ..> ProposedCombination
-
-class ValidationErrorView #LightGreen {
-
-    + MESSAGES
-    
-    + ValidationErrorView()
-    + show(validationError)
-}
-ValidationErrorView ..> ValidationError
-ValidationErrorView ..> Combination
-ValidationErrorView ..> IntervalOpenClosed
+ProposedCombinationView ..> Error
 
 class ResultView #LightGreen {
     
@@ -107,22 +95,24 @@ class Combination #Wheat{
     + getValids()
     + getRandomValidColor()
     + isValid()    
-    + getValidationError()
+    + getError()
     + includes(color)    
     + addColor(color)          
     + getColor(index)
 }
-Combination .down.> ValidationError
+Combination .down.> Error
 Combination ..> IntervalOpenClosed
 
-enum ValidationError #Wheat{    
-    INVALID_LENGTH
-    INVALID_COLORS
-    REPEATED_COLORS
-    NULL
+class Error #Wheat{    
+    + MESSAGES
+    + index
 
+    + Error(validsColors)
+    + setInvalidLength()
+    + setInvalidColors()
+    + setRepeatedColors()
     + isNull()
-    + getOrdinal()
+    + toString()
 }
 
 class ProposedCombination #Wheat{
@@ -133,7 +123,7 @@ class ProposedCombination #Wheat{
     + getColors()   
 }
 ProposedCombination *-down-> Combination 
-
+ProposedCombination ..> Error
 
 
 class YesNoDialog #LightGreen {
@@ -146,12 +136,6 @@ class YesNoDialog #LightGreen {
     + ask()
     + isAffirmative()
 }
-
-class EnumSetUp #LightSteelBlue {
-    + initEnumSetUp()
-    + setUp()
-}
-EnumSetUp ..> ValidationError
 
 class IntervalOpenClosed #Wheat{
     - max
