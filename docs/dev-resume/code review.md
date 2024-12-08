@@ -1,10 +1,17 @@
 # Problem solved in this commit
 
 ## Problem
+- Many implementations could be simplified if the data in attribute 'colors ' in 'Combination' was an array of strings (instead of actual string).
 
 ## Solution
+- Adapt the code, to work with an array of color.
+- Simplify methods in Combination using array methods.
 
-
+## Ideas to consider in the future
+1. Enum approach is ok?
+2. There's duplicated code in asserts?
+3. Methods toString in models?
+4. ProposedCombination is needed?
 
 # TODOs in code review
 1. Simplicity:

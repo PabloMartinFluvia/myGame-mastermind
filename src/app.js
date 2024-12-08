@@ -33,7 +33,7 @@ function Mastermind() {
     };
 }
 function initMastermindPrototype() {
-    Mastermind.prototype.play = function() {
+    Mastermind.prototype.play = function () {
         let resume;
         do {
             this.gameView.play(this.game);
@@ -88,19 +88,14 @@ function initYesNoDialogProtoype() {
             }
         } while (error);
 
-        function isNegative(object) {
-            return hasAnswer(object, object.NO);
+        function isNegative(dialog) {
+            return dialog.answer = dialog.YES;;
         }
     };
 
     YesNoDialog.prototype.isAffirmative = function () {
-        return hasAnswer(this, this.YES);
+        return this.answer = this.YES;        
     };
-
-    function hasAnswer(object, expected) {
-        assert(object ?? false);
-        return object.answer === expected;
-    }
 }
 
 function GameView() {
@@ -109,7 +104,7 @@ function GameView() {
     this.resultView = new ResultView();
 }
 function initGameViewPrototype() {
-    GameView.prototype.play = function(game) {
+    GameView.prototype.play = function (game) {
         assert(game ?? false);
 
         consoleMPDS.writeln(`----- MASTERMIND -----`);
@@ -153,15 +148,15 @@ function initSecretCombinationViewProtoype() {
 }
 
 function ProposedCombinationView() {
-    this.validationErrorView = new ValidationErrorView(new ProposedCombination("").validColorsToString());
+    this.validationErrorView = new ValidationErrorView();
 }
 function initProposedCombinationViewPrototype() {
     ProposedCombinationView.prototype.ask = function () {
         let proposed;
         let error;
         do {
-            const colors = consoleMPDS.readString(`Propose a combination:`);
-            proposed = new ProposedCombination(colors);
+            const colors = consoleMPDS.readString(`Propose a combination:`);            
+            proposed = new ProposedCombination(Array.from(colors));
             error = !proposed.isValid();
             if (error) {
                 this.validationErrorView.show(proposed.getValidationError());
@@ -177,10 +172,10 @@ function initProposedCombinationViewPrototype() {
     };
 }
 
-function ValidationErrorView(validColorsMsg) {
+function ValidationErrorView() {    
     this.MESSAGES = [
         `Wrong proposed combination length`,
-        `Wrong colors, they must be: ${validColorsMsg}`,
+        `Wrong colors, they must be: ${new Combination().validColorsToString()}`,
         `Wrong proposed combination, colors can't be repeated`
     ]
 }
@@ -230,9 +225,6 @@ function initGamePrototype() {
     };
 
     Game.prototype.getResult = function (index) {
-        assert(typeof index === "number");
-        assert(0 <= index && index < this.getAttempts());
-
         return this.secret.getResult(this.getProposed(index));
     };
 
@@ -262,12 +254,12 @@ function SecretCombination() {
 }
 function initSecretCombinationPrototype() {
     SecretCombination.prototype.reset = function () {
-        this.combination = new Combination("");
+        this.combination = new Combination();
         do {
             let color;
             do {
                 color = this.combination.getRandomValidColor();
-            } while (this.combination.containsColor(color));
+            } while (this.combination.includes(color));
             this.combination.addColor(color);
         } while (!this.combination.isValid());
     };
@@ -282,7 +274,7 @@ function initSecretCombinationPrototype() {
             const colorProposed = proposed.getColor(i);
             if (colorProposed === this.combination.getColor(i)) {
                 blacks++;
-            } else if (this.combination.containsColor(colorProposed)) {
+            } else if (this.combination.includes(colorProposed)) {
                 whites++;
             }
         }
@@ -295,36 +287,29 @@ function initSecretCombinationPrototype() {
 }
 
 function ProposedCombination(colors) {
-    assert(typeof colors === "string");
-
     this.combination = new Combination(colors);
 }
 function initProposedCombinationPrototype() {
-    ProposedCombination.prototype.validColorsToString = function () {
-        return this.combination.validColorsToString();
-    },
 
-        ProposedCombination.prototype.isValid = function () {
-            return this.combination.isValid();
-        },
+    ProposedCombination.prototype.isValid = function () {
+        return this.combination.isValid();
+    };
 
-        ProposedCombination.prototype.getValidationError = function () {
-            return this.combination.getValidationError();
-        },
+    ProposedCombination.prototype.getValidationError = function () {
+        return this.combination.getValidationError();
+    };
 
-        ProposedCombination.prototype.getColor = function (index) {
-            assert(typeof index === "number");
-            assert(0 <= index && index < this.combination.getLength());
+    ProposedCombination.prototype.getColor = function (index) {
+        return this.combination.getColor(index);
+    };
 
-            return this.combination.getColor(index);
-        },
-
-        ProposedCombination.prototype.toString = function () {
-            return this.combination.toString();
-        }
+    ProposedCombination.prototype.toString = function () {
+        return this.combination.toString();
+    };
 }
 
-function Combination(colors) {
+function Combination(colors = []) {
+    assert(Array.isArray(colors))
     assert(colors.length >= 0);
     for (let color of colors) {
         assert(typeof color === "string");
@@ -344,7 +329,8 @@ function initCombinationPrototype() {
     };
 
     Combination.prototype.getRandomValidColor = function () {
-        return this.VALID_COLORS[parseInt(Math.random() * this.VALID_COLORS.length)];
+        const randomIndex = Math.floor(Math.random() * this.VALID_COLORS.length);
+        return this.VALID_COLORS[randomIndex];
     };
 
     Combination.prototype.isValid = function () {
@@ -366,10 +352,9 @@ function initCombinationPrototype() {
             return combination.getLength() === combination.VALID_LENGTH;
         };
 
-        function hasValidColors(combination) {
-            const valids = new Combination(combination.VALID_COLORS);
+        function hasValidColors(combination) {            
             for (let color of combination.colors) {
-                if (!valids.containsColor(color)) {
+                if (!combination.VALID_COLORS.includes(color)) {
                     return false;
                 }
             }
@@ -377,35 +362,29 @@ function initCombinationPrototype() {
         };
 
         function hasUniqueColors(combination) {
-            const test = new Combination("");
+            const copy = [];
             for (let color of combination.colors) {
-                if (test.containsColor(color)) {
+                if (copy.includes(color)) {
                     return false;
-                } else {
-                    test.addColor(color);
                 }
+                copy.push(color);
             }
             return true;
         };
     };
 
-    Combination.prototype.containsColor = function (searched) {
-        assert(typeof searched === "string");
-        assert(searched.length === 1);
+    Combination.prototype.includes = function (color) {
+        assert(typeof color === "string");
+        assert(color.length === 1);
 
-        for (let color of this.colors) {
-            if (color === searched) {
-                return true;
-            }
-        }
-        return false;
+        return this.colors.includes(color);
     };
 
     Combination.prototype.addColor = function (color) {
         assert(typeof color === "string");
         assert(color.length === 1);
 
-        this.colors += color;
+        this.colors.push(color);
     };
 
     Combination.prototype.getColor = function (index) {
@@ -418,24 +397,25 @@ function initCombinationPrototype() {
     Combination.prototype.getLength = function () {
         return this.colors.length;
     };
-
+    
     Combination.prototype.toString = function () {
-        return this.colors;
+        return this.colors.toString().replace(/,/g, '');
     };
+    
 }
 
-function Result(combinationLength, blacks, whites) {
+function Result(winnerCount, blacks, whites) {
     assert(blacks >= 0);
     assert(whites >= 0);
-    assert(combinationLength >= blacks + whites);
+    assert(winnerCount >= blacks + whites);
 
-    this.combinationLength = combinationLength;
+    this.winnerCount = winnerCount;
     this.blacks = blacks;
     this.whites = whites;
 }
 function initResultPrototype() {
     Result.prototype.isWinner = function () {
-        return this.getBlacks() === this.combinationLength;
+        return this.getBlacks() === this.winnerCount;
     };
 
     Result.prototype.getBlacks = function () {

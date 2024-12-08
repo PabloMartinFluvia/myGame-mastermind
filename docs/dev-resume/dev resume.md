@@ -10,6 +10,7 @@
     * [Task 4](#task4-js_v04)
     * [Task 5](#task5-js_v05)
     * [Task 6](#task6-js_v06)
+    * [Task 7](#task7-js_v07)
 * [Analysis](#analysis)
 
 ## Intro
@@ -82,6 +83,10 @@ Task's description contains what's <i>new</i> vs previous task.
 ### Task6: js_v0.6
 - Task:
     - Upgrade previous task usig constructor functions and prototypes.
+
+### Task7: js_v0.7
+- Task:
+    - Apply native js's methods from prorotypes (Array, Function, Object, wrappers ...)
 
 ## Analysis
 

@@ -41,10 +41,11 @@ class ValidationErrorView #LightGreen {
 
     + MESSAGES
     
-    + ValidationErrorView(validColorsMsg)
+    + ValidationErrorView()
     + show(validationError)
 }
 ValidationErrorView ..> ValidationError
+ValidationErrorView ..> Combination
 
 class ResultView #LightGreen {
     
@@ -87,12 +88,12 @@ class Combination #Wheat{
     + VALID_COLORS    
     + colors
 
-    + Combination(colors)
+    + Combination(colors = [])
     + validColorsToString()
     + getRandomValidColor()
     + isValid()    
     + getValidationError()
-    + containsColor(searched)    
+    + includes(color)    
     + addColor(color)          
     + getColor(index)
     + getLength()      
@@ -112,8 +113,7 @@ enum ValidationError #Wheat{
 
 class ProposedCombination #Wheat{
 
-    + ProposedCombination(colors)  
-    + validColorsToString() 
+    + ProposedCombination(colors)
     + isValid()         
     + getValidationError()
     + getColor(index)   
@@ -122,11 +122,11 @@ class ProposedCombination #Wheat{
 ProposedCombination *-down-> Combination 
 
 class Result #Wheat{
-    + combinationLength
+    + winnerCount
     + blacks
     + whites
 
-    + Result(combinationLength, blacks, whites)
+    + Result(winnerCount, blacks, whites)
     + isWinner()
     + getBlacks()    
     + getWhites()    
