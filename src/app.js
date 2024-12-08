@@ -4,13 +4,12 @@ const consoleMPDS = new Console();
 
 new Mastermind().play();
 
-
 function Mastermind() {
     initPrototypes();
     initEnums();
 
     this.game = new Game();
-    this.gameView = new GameView();
+    this.gameView = new GameView(this.game);
     this.continueDialog = new YesNoDialog("Do you want to continue?");
 
     function initEnums() { // to init simulated enums
@@ -38,7 +37,7 @@ function initMastermindPrototype() {
     Mastermind.prototype.play = function () {
         let resume;
         do {
-            this.gameView.play(this.game);
+            this.gameView.play();
             this.continueDialog.ask();
             resume = this.continueDialog.isAffirmative();
             if (resume) {
@@ -101,34 +100,31 @@ function initYesNoDialogProtoype() {
     };
 }
 
-function GameView() {
+function GameView(game) {
+    assert(game ?? false);
+    this.game = game;
     this.secretCombinationView = new SecretCombinationView();
-    this.proposedCombinationView = new ProposedCombinationView();
-    this.resultView = new ResultView();
+    this.proposedCombinationView = new ProposedCombinationView(game);
+    this.resultView = new ResultView(game);
 }
 function initGameViewPrototype() {
-    GameView.prototype.play = function (game) {
-        assert(game ?? false);
-
+    GameView.prototype.play = function () {        
         consoleMPDS.writeln(`----- MASTERMIND -----`);
-        show(game, this);
+        show(this);
         do {
-            game.addProposed(this.proposedCombinationView.ask());
-            show(game, this);
-        } while (!game.isWinner() && !game.isMaxAttempts());
-        consoleMPDS.writeln(`You've ${game.isWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
+            this.proposedCombinationView.read();            
+            show(this);
+        } while (!this.game.isWinner() && !this.game.isMaxAttempts());
+        consoleMPDS.writeln(`You've ${this.game.isWinner() ? `won!!! ;-)` : `lost!!! :-(`}`);
 
-        function show(game, gameView) {
-            assert(game ?? false);
-
-
-            const attemptsCount = game.countAttempts();
+        function show(gameView) {
+            const attemptsCount = gameView.game.countAttempts();
             consoleMPDS.writeln(`\n${attemptsCount} attempt(s):`);
             gameView.secretCombinationView.show();
             for (let attempt = 1; attempt <= attemptsCount; attempt++) {
-                gameView.proposedCombinationView.show(game, attempt);
+                gameView.proposedCombinationView.show(attempt);
                 consoleMPDS.write(' --> ');
-                gameView.resultView.show(game, attempt);
+                gameView.resultView.show(attempt);
             }
         }        
     }
@@ -145,11 +141,13 @@ function initSecretCombinationViewProtoype() {
     }
 }
 
-function ProposedCombinationView() {
+function ProposedCombinationView(game) {
+    assert(game ?? false);
     this.validationErrorView = new ValidationErrorView();
+    this.game = game;
 }
 function initProposedCombinationViewPrototype() {
-    ProposedCombinationView.prototype.ask = function () {
+    ProposedCombinationView.prototype.read = function () {
         let proposed;
         let error;
         do {
@@ -160,13 +158,11 @@ function initProposedCombinationViewPrototype() {
                 this.validationErrorView.show(proposed.getValidationError());
             }
         } while (error);
-        return proposed;
+        this.game.addProposed(proposed);
     };
 
-    ProposedCombinationView.prototype.show = function (game, attempt) {
-        assert(game ?? false);
-
-        const colors = game.getProposed(attempt - 1).getColors();
+    ProposedCombinationView.prototype.show = function (attempt) {        
+        const colors = this.game.getProposed(attempt - 1).getColors();
         consoleMPDS.write(colors.join(""));
     };
 }
@@ -188,13 +184,13 @@ function initValidationErrorViewPrototype() {
     }
 }
 
-function ResultView() {
-    // without attributes due a dessign
+function ResultView(game) {
+    assert(game ?? false);
+    this.game = game;
 }
 function initResultViewPrototype() {
-    ResultView.prototype.show = function (game, attempt) {
-        assert(game ?? false);
-        const result = game.getResult(attempt - 1);
+    ResultView.prototype.show = function (attempt) {        
+        const result = this.game.getResult(attempt - 1);
         consoleMPDS.writeln(`${result.getBlacks()} blacks and ${result.getWhites()} whites`);
     }
 }
@@ -236,7 +232,7 @@ function initGamePrototype() {
 
         return this.proposeds[index];
     };
-    
+
     Game.prototype.reset = function () {
         this.proposeds = [];
         this.secret.reset();

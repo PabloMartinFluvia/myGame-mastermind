@@ -1,10 +1,13 @@
 # Problem solved in this commit
 
 ## Problem
-- GameView is coupled to ProposedCombination and Result, but doesn't collaborate with them.
+- Game View always collaborates with the same Game object, but in the actual dessig the relation is type *use*.
+- Ídem for ResultView and ProposedCombinationView
 
 ## Solution
-- Uncouple GameView to these models.
+- Stablish an *association* to Game in these views.
+- Due this change, ProposedCombinationView refactored: doesn't *ask* for a proposed combination and returns it -> *read* the proposed, collaborating with game to store it.
+
 
 ## Ideas to consider in the future
 - Enum approach is ok?

@@ -12,13 +12,13 @@ Mastermind ..> EnumSetUp
 
 class GameView #LightGreen {
 
-    + GameView()
-    + play(game)
+    + GameView(game)
+    + play()
 }
 GameView *--> SecretCombinationView
 GameView *--> ProposedCombinationView
 GameView *--> ResultView
-GameView ..> Game
+GameView --> Game
 
 
 class SecretCombinationView #LightGreen {
@@ -32,12 +32,12 @@ SecretCombinationView ..> Combination
 
 class ProposedCombinationView #LightGreen {
     
-    + ProposedCombinationView()
-    + ask()
-    + show(game, attempt)
+    + ProposedCombinationView(game)
+    + read()
+    + show(attempt)
 }
 ProposedCombinationView *--> ValidationErrorView
-ProposedCombinationView ..> Game
+ProposedCombinationView --> Game
 ProposedCombinationView ..> ProposedCombination
 
 class ValidationErrorView #LightGreen {
@@ -53,10 +53,10 @@ ValidationErrorView ..> IntervalOpenClosed
 
 class ResultView #LightGreen {
     
-    + ResultView()
-    + show(game, attempt)
+    + ResultView(game)
+    + show(attempt)
 }
-ResultView ..> Game
+ResultView --> Game
 ResultView ..> Result
 
 class Game #Wheat{
