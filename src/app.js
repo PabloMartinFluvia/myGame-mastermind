@@ -4,6 +4,7 @@ const consoleMPDS = new Console();
 
 new Mastermind().play();
 
+
 function Mastermind() {
     initPrototypes();
     initEnums();
@@ -30,6 +31,7 @@ function Mastermind() {
         initProposedCombinationPrototype();
         initCombinationPrototype();
         initResultPrototype();
+        initIntervalOpenClosedProtorype();
     };
 }
 function initMastermindPrototype() {
@@ -71,6 +73,7 @@ function ValidationError() { // enum aproach
 
 function YesNoDialog(question) {
     assert(typeof question === "string");
+    assert(question.endsWith('?'));
 
     this.YES = "y";
     this.NO = "n";
@@ -89,12 +92,12 @@ function initYesNoDialogProtoype() {
         } while (error);
 
         function isNegative(dialog) {
-            return dialog.answer = dialog.YES;;
+            return dialog.answer === dialog.NO;;
         }
     };
 
     YesNoDialog.prototype.isAffirmative = function () {
-        return this.answer = this.YES;        
+        return this.answer === this.YES;        
     };
 }
 
@@ -118,10 +121,10 @@ function initGameViewPrototype() {
         function show(game, gameView) {
             assert(game ?? false);
 
-            const attempts = game.getAttempts();
-            consoleMPDS.writeln(`\n${attempts} attempt(s):`);
+            const attemptsCount = game.countAttempts();
+            consoleMPDS.writeln(`\n${attemptsCount} attempt(s):`);
             gameView.secretCombinationView.show(game.getSecret());
-            for (let i = 0; i < attempts; i++) {
+            for (let i = 0; i < attemptsCount; i++) {
                 gameView.proposedCombinationView.show(game.getProposed(i));
                 consoleMPDS.write(' --> ');
                 gameView.resultView.show(game.getResult(i));
@@ -131,19 +134,15 @@ function initGameViewPrototype() {
 }
 
 function SecretCombinationView() {
-    // without attributes due a dessign
+    this.HIDDEN_COLOR = '*';
 }
 function initSecretCombinationViewProtoype() {
 
     SecretCombinationView.prototype.show = function (secret) {
         assert(secret ?? false);
 
-        const HIDDEN_COLOR = '*';
-        let msg = '';
-        for (let i = 0; i < secret.getLength(); i++) {
-            msg += HIDDEN_COLOR;
-        }
-        consoleMPDS.writeln(msg);
+        
+        consoleMPDS.writeln(this.HIDDEN_COLOR.repeat(secret.getLength()));
     }
 }
 
@@ -182,9 +181,10 @@ function ValidationErrorView() {
 function initValidationErrorViewPrototype() {
     ValidationErrorView.prototype.show = function (validationError) {
         assert(!validationError.isNull());
-        assert(0 <= validationError.getOrdinal() && validationError.getOrdinal() < this.MESSAGES.length);
+        const index = validationError.getOrdinal();
+        assert(new IntervalOpenClosed(this.MESSAGES.length).includes(index));            
 
-        consoleMPDS.writeln(this.MESSAGES[validationError.getOrdinal()]);
+        consoleMPDS.writeln(this.MESSAGES[index]);
     }
 }
 
@@ -208,18 +208,17 @@ function initGamePrototype() {
     Game.prototype.addProposed = function (proposed) {
         assert(proposed ?? false);
         assert(proposed.isValid());
-        assert(this.getAttempts() < this.MAX_ATTEMPTS);
+        assert(!this.isMaxAttempts());
 
-        this.proposeds[this.getAttempts()] = proposed;
+        this.proposeds.push(proposed);        
     };
 
-    Game.prototype.getAttempts = function () {
+    Game.prototype.countAttempts = function () {
         return this.proposeds.length;
     };
 
     Game.prototype.getProposed = function (index) {
-        assert(typeof index === "number");
-        assert(0 <= index && index < this.getAttempts());
+        assert(new IntervalOpenClosed(this.countAttempts()).includes(index));      
 
         return this.proposeds[index];
     };
@@ -229,13 +228,13 @@ function initGamePrototype() {
     };
 
     Game.prototype.isWinner = function () {
-        assert(this.getAttempts() > 0);
+        assert(this.countAttempts() > 0);
 
-        return this.getResult(this.getAttempts() - 1).isWinner();
+        return this.getResult(this.countAttempts() - 1).isWinner();
     };
 
     Game.prototype.isMaxAttempts = function () {
-        return this.getAttempts() === this.MAX_ATTEMPTS;
+        return this.countAttempts() === this.MAX_ATTEMPTS;
     };
 
     Game.prototype.getSecret = function () {
@@ -286,6 +285,29 @@ function initSecretCombinationPrototype() {
     };
 }
 
+function Result(winnerCount, blacks, whites) {    
+    assert(blacks >= 0);
+    assert(whites >= 0);
+    assert(winnerCount >= blacks + whites);
+
+    this.winnerCount = winnerCount;
+    this.blacks = blacks;
+    this.whites = whites;
+}
+function initResultPrototype() {
+    Result.prototype.isWinner = function () {
+        return this.getBlacks() === this.winnerCount;
+    };
+
+    Result.prototype.getBlacks = function () {
+        return this.blacks;
+    };
+
+    Result.prototype.getWhites = function () {
+        return this.whites;
+    }
+}
+
 function ProposedCombination(colors) {
     this.combination = new Combination(colors);
 }
@@ -309,11 +331,8 @@ function initProposedCombinationPrototype() {
 }
 
 function Combination(colors = []) {
-    assert(Array.isArray(colors))
-    assert(colors.length >= 0);
-    for (let color of colors) {
-        assert(typeof color === "string");
-    }
+    assert(Array.isArray(colors));
+    colors.forEach(color => assertIsChar(color));
 
     this.VALID_LENGTH = 4;
     this.VALID_COLORS = ['r', 'g', 'y', 'b', 'm', 'c'];
@@ -374,22 +393,19 @@ function initCombinationPrototype() {
     };
 
     Combination.prototype.includes = function (color) {
-        assert(typeof color === "string");
-        assert(color.length === 1);
+        assertIsChar(color);
 
         return this.colors.includes(color);
     };
 
     Combination.prototype.addColor = function (color) {
-        assert(typeof color === "string");
-        assert(color.length === 1);
+        assertIsChar(color);
 
         this.colors.push(color);
     };
 
     Combination.prototype.getColor = function (index) {
-        assert(typeof index === "number");
-        assert(0 <= index && index < this.getLength());
+        assert(new IntervalOpenClosed(this.getLength()).includes(index));        
 
         return this.colors[index];
     };
@@ -400,30 +416,25 @@ function initCombinationPrototype() {
     
     Combination.prototype.toString = function () {
         return this.colors.toString().replace(/,/g, '');
-    };
-    
+    };    
 }
 
-function Result(winnerCount, blacks, whites) {
-    assert(blacks >= 0);
-    assert(whites >= 0);
-    assert(winnerCount >= blacks + whites);
 
-    this.winnerCount = winnerCount;
-    this.blacks = blacks;
-    this.whites = whites;
+/**
+ * Max limit is open. Min limit is closed.
+ */
+function IntervalOpenClosed(max, min = 0) {    
+    assertIsNum(max);
+    assertIsNum(min);
+    assert(max > min);
+
+    this.max = max;
+    this.min = min    
 }
-function initResultPrototype() {
-    Result.prototype.isWinner = function () {
-        return this.getBlacks() === this.winnerCount;
-    };
-
-    Result.prototype.getBlacks = function () {
-        return this.blacks;
-    };
-
-    Result.prototype.getWhites = function () {
-        return this.whites;
+function initIntervalOpenClosedProtorype() {
+    IntervalOpenClosed.prototype.includes = function(value) {
+        assertIsNum(value);
+        return this.max > value && value >= this.min;
     }
 }
 
@@ -435,4 +446,13 @@ function assert(condition, msg) {
         const assertionError = "I'm CONSTANT !!!";
         assertionError = "assert stop execution";
     }
+}
+
+function assertIsChar(value) {
+    assert(typeof value === "string");
+    assert(value.length === 1);
+}
+
+function assertIsNum(value) {
+    assert(typeof value === "number");
 }

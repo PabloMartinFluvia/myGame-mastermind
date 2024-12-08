@@ -22,6 +22,7 @@ GameView ..> Game
 
 
 class SecretCombinationView #LightGreen {
+    + HIDDEN_COLOR
     
     + SecretCombinationView()
     + show(secret)
@@ -46,6 +47,7 @@ class ValidationErrorView #LightGreen {
 }
 ValidationErrorView ..> ValidationError
 ValidationErrorView ..> Combination
+ValidationErrorView ..> IntervalOpenClosed
 
 class ResultView #LightGreen {
     
@@ -59,7 +61,7 @@ class Game #Wheat{
 
     + Game()
     + addProposed(proposed)
-    + getAttempts()    
+    + countAttempts()    
     + getProposed(index)
     + getResult(index)
     + isWinner()
@@ -70,6 +72,7 @@ class Game #Wheat{
 Game *--> SecretCombination
 Game o--> "0..10" ProposedCombination
 Game .down.> Result
+Game ..> IntervalOpenClosed
 
 class SecretCombination #Wheat{
     
@@ -82,6 +85,17 @@ class SecretCombination #Wheat{
 SecretCombination *-down-> Combination
 SecretCombination .down.> ProposedCombination
 SecretCombination .down.> Result
+
+class Result #Wheat{
+    + winnerCount
+    + blacks
+    + whites
+
+    + Result(winnerCount, blacks, whites)
+    + isWinner()
+    + getBlacks()    
+    + getWhites()    
+}
 
 class Combination #Wheat{
     + VALID_LENGTH
@@ -100,6 +114,7 @@ class Combination #Wheat{
     + toString()
 }
 Combination .down.> ValidationError
+Combination ..> IntervalOpenClosed
 
 enum ValidationError #Wheat{    
     INVALID_LENGTH
@@ -121,16 +136,7 @@ class ProposedCombination #Wheat{
 }
 ProposedCombination *-down-> Combination 
 
-class Result #Wheat{
-    + winnerCount
-    + blacks
-    + whites
 
-    + Result(winnerCount, blacks, whites)
-    + isWinner()
-    + getBlacks()    
-    + getWhites()    
-}
 
 class YesNoDialog #LightGreen {
     + YES
@@ -148,5 +154,13 @@ class EnumSetUp #LightSteelBlue {
     + setUp()
 }
 EnumSetUp ..> ValidationError
+
+class IntervalOpenClosed #Wheat{
+    - max
+    - min
+
+    + IntervalOpenClosed(max, min = 0)
+    + includes(value)
+}
 
 @enduml

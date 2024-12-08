@@ -1,17 +1,18 @@
 # Problem solved in this commit
 
 ## Problem
-- Many implementations could be simplified if the data in attribute 'colors ' in 'Combination' was an array of strings (instead of actual string).
+There's duplicated code in many asserts: when asserting one number is in a specific range.
 
 ## Solution
-- Adapt the code, to work with an array of color.
-- Simplify methods in Combination using array methods.
+Added IntervalOpenClosed and custom assert functions.
 
 ## Ideas to consider in the future
-1. Enum approach is ok?
-2. There's duplicated code in asserts?
-3. Methods toString in models?
-4. ProposedCombination is needed?
+- Enum approach is ok?
+- Methods toString in models?
+- ProposedCombination is needed?
+- Better logic to init/reset secret combination?
+- Methods length/count needed?
+- SecretView relation with SecretCombination?
 
 # TODOs in code review
 1. Simplicity:
