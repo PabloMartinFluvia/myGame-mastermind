@@ -167,14 +167,15 @@ function initProposedCombinationViewPrototype() {
     ProposedCombinationView.prototype.show = function (proposed) {
         assert(proposed ?? false);
 
-        consoleMPDS.write(proposed.toString());
+        const colors = proposed.getColors();
+        consoleMPDS.write(colors.join(""));
     };
 }
 
-function ValidationErrorView() {    
+function ValidationErrorView() {       
     this.MESSAGES = [
         `Wrong proposed combination length`,
-        `Wrong colors, they must be: ${new Combination().validColorsToString()}`,
+        `Wrong colors, they must be: ${new Combination().getValids().join("")}`,
         `Wrong proposed combination, colors can't be repeated`
     ]
 }
@@ -320,14 +321,18 @@ function initProposedCombinationPrototype() {
     ProposedCombination.prototype.getValidationError = function () {
         return this.combination.getValidationError();
     };
-
+    
     ProposedCombination.prototype.getColor = function (index) {
         return this.combination.getColor(index);
     };
-
-    ProposedCombination.prototype.toString = function () {
-        return this.combination.toString();
-    };
+    
+    ProposedCombination.prototype.getColors = function () {
+        const colors = [];
+        for (let i = 0; i < this.combination.getLength(); i++) {
+            colors.push(this.combination.getColor(i));
+        }
+        return colors;
+    }
 }
 
 function Combination(colors = []) {
@@ -339,12 +344,8 @@ function Combination(colors = []) {
     this.colors = colors;
 }
 function initCombinationPrototype() {
-    Combination.prototype.validColorsToString = function () {
-        let msg = "";
-        for (let validColor of this.VALID_COLORS) {
-            msg += validColor;
-        }
-        return msg;
+    Combination.prototype.getValids = function () {
+        return this.VALID_COLORS;
     };
 
     Combination.prototype.getRandomValidColor = function () {
@@ -413,10 +414,6 @@ function initCombinationPrototype() {
     Combination.prototype.getLength = function () {
         return this.colors.length;
     };
-    
-    Combination.prototype.toString = function () {
-        return this.colors.toString().replace(/,/g, '');
-    };    
 }
 
 

@@ -1,18 +1,20 @@
 # Problem solved in this commit
 
 ## Problem
-There's duplicated code in many asserts: when asserting one number is in a specific range.
+- There're models with methods 'toString', but it's not needed for de logic.
 
 ## Solution
-Added IntervalOpenClosed and custom assert functions.
+- Move the responsibility of parse values to a "user friendly format" in views.
 
 ## Ideas to consider in the future
+- getColor(index) in ProposedCombination it's not primitive
+
 - Enum approach is ok?
-- Methods toString in models?
 - ProposedCombination is needed?
 - Better logic to init/reset secret combination?
 - Methods length/count needed?
 - SecretView relation with SecretCombination?
+- Simplify how GamwView requests proposeds and results to Game?
 
 # TODOs in code review
 1. Simplicity:

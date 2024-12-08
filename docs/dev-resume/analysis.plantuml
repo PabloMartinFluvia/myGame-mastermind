@@ -103,15 +103,14 @@ class Combination #Wheat{
     + colors
 
     + Combination(colors = [])
-    + validColorsToString()
+    + getValids()
     + getRandomValidColor()
     + isValid()    
     + getValidationError()
     + includes(color)    
     + addColor(color)          
     + getColor(index)
-    + getLength()      
-    + toString()
+    + getLength() 
 }
 Combination .down.> ValidationError
 Combination ..> IntervalOpenClosed
@@ -132,7 +131,7 @@ class ProposedCombination #Wheat{
     + isValid()         
     + getValidationError()
     + getColor(index)   
-    + toString()   
+    + getColors()   
 }
 ProposedCombination *-down-> Combination 
 
